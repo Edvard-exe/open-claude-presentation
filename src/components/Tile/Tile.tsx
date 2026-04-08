@@ -3,6 +3,7 @@ import { useBoardStore } from '../../store/boardStore';
 import { useTileDrag } from '../../hooks/useTileDrag';
 import { NeuralBackground } from './NeuralBackground';
 import { OrbitalBackground } from './OrbitalBackground';
+import { CacheBackground } from './CacheBackground';
 import type { TileData } from '../../types/board';
 import './Tile.css';
 
@@ -44,7 +45,7 @@ export function Tile({ tile }: TileProps) {
 
   const accentColor = tile.color || '#4A90D9';
   const hasSubItems = tile.subItems && tile.subItems.length > 0;
-  const useOrbital = hasSubItems;
+  const bgType = tile.backgroundType || (hasSubItems ? 'orbital' : 'neural');
 
   return (
     <div
@@ -61,9 +62,11 @@ export function Tile({ tile }: TileProps) {
       onPointerUp={handlePointerUp}
     >
       {tile.animated && (
-        useOrbital
-          ? <OrbitalBackground width={tile.width} height={tile.height} color={accentColor} />
-          : <NeuralBackground width={tile.width} height={tile.height} color={accentColor} />
+        bgType === 'cache'
+          ? <CacheBackground width={tile.width} height={tile.height} color={accentColor} />
+          : bgType === 'orbital'
+            ? <OrbitalBackground width={tile.width} height={tile.height} color={accentColor} />
+            : <NeuralBackground width={tile.width} height={tile.height} color={accentColor} />
       )}
       <div className="tile__body">
         <div className="tile__header">

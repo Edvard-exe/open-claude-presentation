@@ -6,12 +6,9 @@ import { ANIMATION_STEPS } from '../data/animationSteps';
 const CORE_ID = 'tile-core-architecture';
 const AGENT_ID = 'tile-agent-system';
 const CACHE_ID = 'tile-caching';
-const AUTO_ID = 'tile-autonomous';
 const MAILBOX_ID = 'tile-mailbox';
 const HOOKS_ID = 'tile-hooks';
 const COMPACT_ID = 'tile-compaction';
-const ADVISOR_ID = 'tile-advisor';
-const MEMORY_ID = 'tile-memory';
 const PROMPT_ID = 'tile-prompt-stack';
 const SECURITY_ID = 'tile-security';
 
@@ -20,57 +17,11 @@ export const useBoardStore = create<BoardState>((set) => ({
   zoom: 1,
   tiles: [
     // ════════════════════════════════════════════════════════════
-    //  ROW 1 — Main flow: Memory → Prompt → Core → Agents → Mailbox
+    //  ROW 1 — Main flow: Prompt → Core → Agents → Mailbox
     // ════════════════════════════════════════════════════════════
     {
-      id: MEMORY_ID,
-      position: { x: 50, y: 50 },
-      width: 360,
-      height: 480,
-      title: 'Memory Vault',
-      content: 'Three-layer persistent memory: global → project → local. Four types: user, feedback, project, reference. Verified before use — "memory says X exists" ≠ "X exists now."',
-      filePath: '/src/utils/claudemd.ts',
-      color: '#60C0A0',
-      animated: true,
-      backgroundType: 'orbital',
-      storySteps: [
-        { label: 'Layers', title: 'Three Memory Layers', source: 'src/utils/claudemd.ts:92', description: 'Layer 1: ~/.claude/CLAUDE.md (global). Layer 2: ./CLAUDE.md + .claude/rules/*.md (project). Layer 3: CLAUDE.local.md (local, gitignored). Later overrides earlier.', spark: 'Users extend the system prompt by writing CLAUDE.md files. It\'s user-accessible prompt engineering that modifies AI behavior without touching code.' },
-        { label: 'Include', title: '@include Directives', source: 'src/utils/claudemd.ts:336', description: 'Memory files can reference other files: @./path, @~/home, @/absolute. Circular reference prevention, binary file blocking, HTML comment stripping.', spark: 'You can build a tree of instructions via @include. Circular references are detected and prevented.' },
-        { label: 'Verify', title: 'Memory Verification', description: '"A memory that names a file path is a claim it existed when the memory was written. Before recommending it: check the file exists. If memory conflicts with current code, trust what you observe now."', spark: '"Memory says X exists" is NOT the same as "X exists now." The system prompt instructs the model to verify before recommending.' },
-        { label: 'Auto', title: 'Auto-Memory System', source: 'src/memdir/memoryScan.ts:13', description: 'Saves runtime memories to ~/.claude/projects/{hash}/MEMORY.md. Frontmatter with name, description, type. Max 40K chars, 200 lines per file, 60KB per session.', spark: '4 memory types: user (preferences), feedback (corrections), project (initiatives), reference (external pointers). Each with different scope and lifetime.' },
-      ],
-      subItems: [
-        {
-          label: 'Three Layers',
-          description: 'Layer 1: ~/.claude/CLAUDE.md (global). Layer 2: ./CLAUDE.md + .claude/rules/*.md (project). Layer 3: CLAUDE.local.md (local, gitignored). Later overrides earlier.',
-          color: '#60C0A0',
-          filePath: 'src/utils/claudemd.ts',
-          line: 92,
-        },
-        {
-          label: '@include Directives',
-          description: 'Memory files can reference other files: @./path, @~/home, @/absolute. Circular reference prevention, binary file blocking, HTML comment stripping.',
-          color: '#60C0A0',
-          filePath: 'src/utils/claudemd.ts',
-          line: 336,
-        },
-        {
-          label: 'Verification Loop',
-          description: 'System prompt instructs: "If memory names a file path, check it exists. If memory names a function, grep for it." Stale memories updated or removed.',
-          color: '#60C0A0',
-        },
-        {
-          label: 'Auto-Memory',
-          description: 'Saves runtime memories to ~/.claude/projects/{hash}/MEMORY.md. Frontmatter with name, description, type. Max 40K chars, 200 lines per file, 60KB per session.',
-          color: '#60C0A0',
-          filePath: 'src/memdir/memoryScan.ts',
-          line: 13,
-        },
-      ],
-    },
-    {
       id: PROMPT_ID,
-      position: { x: 480, y: 50 },
+      position: { x: -380, y: 120 },
       width: 360,
       height: 440,
       title: 'Prompt Stack',
@@ -116,7 +67,7 @@ export const useBoardStore = create<BoardState>((set) => ({
     },
     {
       id: CORE_ID,
-      position: { x: 910, y: 50 },
+      position: { x: 200, y: 150 },
       width: 360,
       height: 300,
       title: 'Core Architecture',
@@ -142,6 +93,7 @@ export const useBoardStore = create<BoardState>((set) => ({
           code: 'while (true) {\n  // 1. Compact context if needed\n  maybe_compact(state, config)\n  // 2. Stream from provider\n  for event in stream(model, system, messages, tools):\n    yield event\n  // 3. If no tool_calls → break\n  if not assistant_turn.tool_calls:\n    break\n  // 4. Execute tools, append results\n  for tc in tool_calls:\n    result = execute_tool(tc)\n    messages.append(result)\n}',
           codeLang: 'python',
           spark: 'This is the entire framework. 8 lines of loop. 700 lines of prompt. The prompt IS the framework.',
+          demo: 'loop' as const,
         },
         {
           label: 'Stream',
@@ -151,6 +103,7 @@ export const useBoardStore = create<BoardState>((set) => ({
           code: 'const result = await anthropic.beta.messages\n  .create(\n    { ...params, stream: true },\n    { signal, headers: { [CLIENT_REQUEST_ID_HEADER]: requestId } }\n  )\n  .withResponse()',
           codeLang: 'typescript',
           spark: 'withRetry() handles 10 retries, fast-mode cooldown, 529→fallback model cascade, and context window overflow — all transparently.',
+          demo: 'stream' as const,
         },
         {
           label: 'Tools?',
@@ -168,6 +121,7 @@ export const useBoardStore = create<BoardState>((set) => ({
           code: 'function partitionToolCalls(blocks) {\n  // isConcurrencySafe() → batch together\n  // otherwise → new serial batch\n  // Result: [[Read, Glob, Grep], [Edit], [Bash]]\n}',
           codeLang: 'typescript',
           spark: 'Read-only tools run 10-parallel. Output truncated at 32K chars with first-half + last-quarter strategy.',
+          demo: 'parallel-tools' as const,
         },
         {
           label: 'Loop',
@@ -182,7 +136,7 @@ export const useBoardStore = create<BoardState>((set) => ({
     },
     {
       id: AGENT_ID,
-      position: { x: 1400, y: 50 },
+      position: { x: 650, y: 120 },
       width: 360,
       height: 540,
       title: 'Agent System',
@@ -192,11 +146,36 @@ export const useBoardStore = create<BoardState>((set) => ({
       diagramId: 'agent-system',
       animated: true,
       storySteps: [
-        { label: 'Spawn', title: 'AgentTool Spawns Sub-Agent', source: 'src/tools/AgentTool/runAgent.ts:248', description: 'Creates a new query() call with isolated context — separate message history, file state cache, abort controller. 5 built-in types: coder, reviewer, researcher, tester, general-purpose.', spark: 'Each sub-agent runs its own while(true) loop. It\'s turtles all the way down.' },
-        { label: 'Fork', title: 'Fork-Join KV Cache Exploit', source: 'src/tools/AgentTool/forkSubagent.ts:107', description: 'Fork children construct byte-identical API request prefixes — same system prompt, same tools, same history, identical placeholder tool results. Only the final directive text differs per child.', code: 'const FORK_PLACEHOLDER_RESULT = "Fork started — processing in background"\nconst toolResultBlocks = toolUseBlocks.map(block => ({\n  type: "tool_result",\n  tool_use_id: block.id,\n  content: [{ type: "text", text: FORK_PLACEHOLDER_RESULT }],\n}))\n// → Only the directive after these placeholders differs per fork', codeLang: 'typescript', spark: 'A 100K-token context fork costs ~1K new tokens. The KV cache is fully reused. This is the trick that makes coordinator mode economically viable.' },
-        { label: 'Coordinate', title: 'Coordinator Mode', source: 'src/coordinator/coordinatorMode.ts:111', description: 'Orchestrates parallel workers through 4 phases: Investigate (parallel research) → Synthesize (coordinator reads findings) → Implement (targeted changes) → Verify (test everything).', spark: '"Never write \'based on your findings\' — that delegates understanding to the worker. Synthesize the findings yourself." This is enforced by PROMPT TEXT, not code.' },
-        { label: 'Worktree', title: 'Worktree Isolation', description: 'isolation="worktree" creates a temporary git branch + directory. Parallel agents edit files without merge conflicts. Auto-cleanup on agent exit.', terminal: { command: 'git worktree add /tmp/agent-abc feat/agent-abc', output: 'Preparing worktree (new branch \'feat/agent-abc\')' } },
-        { label: 'Advisor', title: 'Advisor Model (Server-Side)', source: 'src/utils/advisor.ts', description: 'A server-side tool where Haiku ($0.001) silently reviews Opus\'s work mid-generation. Returns advisor_tool_result — some encrypted as advisor_redacted_result (can\'t decrypt client-side).', spark: 'Haiku costs $0.001 per review. Catches mistakes before Opus spends $0.15. The prompt says: "Give advice serious weight — only override with empirical evidence."' },
+        {
+          label: 'Spawn', title: 'Spawning Sub-Agents', source: 'src/tools/AgentTool/runAgent.ts:248',
+          description: 'AgentTool creates a new query() loop with isolated context — its own message history, file state cache, and abort controller. 5 built-in types: coder, reviewer, researcher, tester, general-purpose.',
+          code: '// Each sub-agent is a full isolated loop:\nawait runAgent({\n  type: "general-purpose",\n  prompt: "Review PR #247 and leave comments",\n  // Sub-agent gets: system prompt + tools + THIS prompt\n  // It does NOT get: parent conversation history\n})\n// The parent blocks until sub-agent completes\n// or gets an urgent SendMessage interrupt',
+          codeLang: 'typescript',
+          spark: 'When you spawn a sub-agent, do you pass just a prompt — or the full parent context? The answer changes cost dramatically.',
+        },
+        {
+          label: 'Fork', title: 'KV Cache Fork Trick', source: 'src/tools/AgentTool/forkSubagent.ts:107',
+          description: 'Parallel sub-agents construct byte-identical API request prefixes — same system prompt, tools, history, placeholder results. Only the final directive differs. The KV cache is shared across all forks.',
+          code: 'const FORK_PLACEHOLDER_RESULT =\n  "Fork started — processing in background"\n\n// All forks share this identical prefix:\nconst sharedPrefix = [\n  ...systemPrompt,\n  ...toolSchemas,\n  ...conversationHistory,\n  { role: "tool_result", content: FORK_PLACEHOLDER_RESULT },\n  // ↑ identical across ALL forks — cache hit!\n]\n\n// Only this differs per fork:\nconst forkDirective = `Focus on: ${forkTask}`',
+          codeLang: 'typescript',
+          spark: 'A 100K-token context fork costs ~1K new tokens because the KV cache is fully shared. This is what makes parallel agents economically viable.',
+        },
+        {
+          label: 'Advisor', title: 'Advisor Model — Live Demo', source: 'src/utils/advisor.ts:9',
+          description: 'Opus calls server_tool_use(name="advisor") during generation → API routes to Haiku internally → Haiku returns feedback → Opus reads it and continues. All inside ONE streaming response.',
+          code: '// What the streaming response looks like:\n{ "type": "content_block_start",\n  "content_block": { "type": "server_tool_use", "name": "advisor" } }\n\n// ... Haiku reviews server-side ...\n\n{ "type": "content_block_start",\n  "content_block": {\n    "type": "advisor_redacted_result",  // encrypted!\n    "encrypted_content": "AQIDAHiS+xOvSaT...mKdFz=",\n    "usage": { "input_tokens": 312, "output_tokens": 89 }\n  }\n}',
+          codeLang: 'json',
+          spark: 'It\'s not two API calls. The advisor runs INSIDE the same streaming response. The client cannot decrypt the feedback — only the model sees it.',
+          demo: 'advisor' as const,
+        },
+        {
+          label: 'Kairos', title: 'Kairos — Tick-Driven Autonomous Agent', source: 'src/main.tsx:1048',
+          description: 'Background timer injects <tick>HH:MM:SS</tick> messages every N seconds. System prompt: "treat ticks as \'you\'re awake, what now?\'" — model works, calls Sleep(), or sends a message.',
+          code: '// The tick injection loop:\nconst tickInterval = setInterval(async () => {\n  const time = new Date().toTimeString().slice(0, 8)\n  await injectUserMessage(`<tick>${time}</tick>`)\n}, N_SECONDS * 1000)\n\n// System prompt for Kairos:\n// "On each <tick>:\n//  1. Assess your environment\n//  2. Take an action, OR call Sleep(seconds)\n//\n//  Prompt cache expires after 5 min.\n//  Each wake-up costs an API call.\n//  Budget your ticks wisely."',
+          codeLang: 'typescript',
+          spark: 'Each tick costs an API call. Cache expires after 5 min of silence. Kairos must self-regulate its own compute — by prompt text, not code.',
+          demo: 'kairos' as const,
+        },
       ],
       subItems: [
         {
@@ -245,7 +224,7 @@ export const useBoardStore = create<BoardState>((set) => ({
     },
     {
       id: MAILBOX_ID,
-      position: { x: 1830, y: 50 },
+      position: { x: 1100, y: 120 },
       width: 360,
       height: 440,
       title: 'Agent Mailbox',
@@ -255,7 +234,7 @@ export const useBoardStore = create<BoardState>((set) => ({
       animated: true,
       backgroundType: 'mailbox',
       storySteps: [
-        { label: 'Route', title: 'SendMessage Routing', source: 'src/tools/SendMessageTool/SendMessageTool.ts:741', description: 'Routes messages: in-process → queuePendingMessage(), cross-process → writeToMailbox(). Handles structured messages (shutdown, permissions, plan approval).', spark: 'Two completely different transports — in-memory queue for fast sub-agent comms, file-based JSON for cross-process teams.' },
+        { label: 'Route', title: 'SendMessage Routing', source: 'src/tools/SendMessageTool/SendMessageTool.ts:741', description: 'Routes messages: in-process → queuePendingMessage(), cross-process → writeToMailbox(). Handles structured messages (shutdown, permissions, plan approval).', spark: 'Two completely different transports — in-memory queue for fast sub-agent comms, file-based JSON for cross-process teams.', demo: 'mailbox-route' as const },
         { label: 'Queue', title: 'Pending Message Queue', description: 'In-memory queue on LocalAgentTaskState, drained at tool-round boundaries via getAgentPendingMessageAttachments() into queued_command attachments.', spark: 'Messages are drained at tool boundaries — the agent peeks between serial tools and batches, so urgent messages can redirect execution.' },
         { label: 'File', title: 'File-Based Mailbox', source: 'src/utils/teammateMailbox.ts:134', description: '~/.claude/teams/{team}/inboxes/{name}.json — file-locked writes, 1-second polling via useInboxPoller.', spark: '1-second polling via useInboxPoller. File-locked writes prevent corruption when multiple agents write simultaneously.' },
       ],
@@ -289,7 +268,7 @@ export const useBoardStore = create<BoardState>((set) => ({
     // ════════════════════════════════════════════════════════════
     {
       id: SECURITY_ID,
-      position: { x: 50, y: 600 },
+      position: { x: 650, y: 620 },
       width: 360,
       height: 480,
       title: 'Security & Permissions',
@@ -302,7 +281,7 @@ export const useBoardStore = create<BoardState>((set) => ({
         { label: 'Checks', title: '23-Point Bash Security', source: 'src/tools/BashTool/bashSecurity.ts:76', description: 'Every bash command validated against 23 attack patterns: incomplete commands, jq abuse, obfuscated flags, shell metacharacters, IFS injection, command substitution, /proc/environ access, brace expansion, and more.', spark: '23 security checks. Each catches attacks the others miss. Defense in depth, not defense in abstraction.' },
         { label: 'Zsh', title: 'Zsh Module Attack Prevention', source: 'src/tools/BashTool/bashSecurity.ts:45', description: 'Blocks 18 commands: zmodload (loads mapfile, system, zpty, net/tcp modules), emulate -c (eval equivalent), sysopen, sysread, ztcp, zsocket, zf_rm, and more.', terminal: { command: 'zmodload zsh/net/tcp', output: '✗ BLOCKED: zmodload is the gateway to raw TCP, filesystem, and pseudo-terminal attacks' }, spark: 'zmodload is the gateway to everything: raw TCP (network exfiltration), filesystem (invisible file I/O), pseudo-terminals (command execution). One command to rule them all.' },
         { label: 'Exploit', title: '/dev/null Boundary Exploit', source: 'src/tools/BashTool/bashSecurity.ts:176', description: 'Without (?=\\s|$) boundary, "> /dev/nullo" matches "/dev/null" as PREFIX → strips it → "echo hi > /dev/nullo" becomes "echo hi o" → the write to /dev/nullo is auto-allowed.', code: '// SECURITY: All patterns MUST have trailing boundary (?=\\s|$).\n// Without it, > /dev/nullo matches /dev/null as PREFIX,\n// strips > /dev/null leaving "o", so\n// echo hi > /dev/nullo becomes echo hi o\n.replace(/[012]?\\s*>\\s*\\/dev\\/null(?=\\s|$)/g, \'\')', codeLang: 'typescript', spark: 'Without three characters — (?=\\s|$) — an attacker can write to any path starting with /dev/null.' },
-        { label: 'Gate', title: '4-Layer Permission Gate', source: 'src/hooks/toolPermission/PermissionContext.ts:63', description: 'Layer 1: auto-approve reads. Layer 2: safe-bash prefix list (29 patterns). Layer 3: hook-based decisions. Layer 4: interactive y/N/a prompt.', spark: 'Three async handlers race to resolve one permission: user dialog, bash classifier, and hooks. Atomic claim() ensures exactly one wins. Called BEFORE awaiting to close the race window.' },
+        { label: 'Gate', title: '4-Layer Permission Gate', source: 'src/hooks/toolPermission/PermissionContext.ts:63', description: 'Layer 1: auto-approve reads. Layer 2: safe-bash prefix list (29 patterns). Layer 3: hook-based decisions. Layer 4: interactive y/N/a prompt.', spark: 'Three async handlers race to resolve one permission: user dialog, bash classifier, and hooks. Atomic claim() ensures exactly one wins. Called BEFORE awaiting to close the race window.', demo: 'permission-gate' as const },
       ],
       subItems: [
         {
@@ -337,7 +316,7 @@ export const useBoardStore = create<BoardState>((set) => ({
     },
     {
       id: CACHE_ID,
-      position: { x: 480, y: 600 },
+      position: { x: 200, y: 520 },
       width: 360,
       height: 480,
       title: 'Prompt Caching',
@@ -348,10 +327,32 @@ export const useBoardStore = create<BoardState>((set) => ({
       animated: true,
       backgroundType: 'cache',
       storySteps: [
-        { label: 'Cost', title: 'The Cost Problem', description: 'Every API call sends the full context. 100K tokens at Opus pricing = ~$1.50/call. Over 50 calls/session = $75. Cache reads cost 90% less.', spark: '$75/session → $10 with caching. That single optimization is what makes the product economically viable.' },
-        { label: 'Latches', title: 'Sticky-On Beta Header Latches', source: 'src/services/api/claude.ts:1405', description: 'Once a beta header is sent, it stays ON for the session. Toggling fast mode would bust ~50-70K cached tokens.', code: '// Sticky-on latches for dynamic beta headers. Each header, once first\n// sent, keeps being sent so mid-session toggles don\'t change the\n// server-side cache key and bust ~50-70K tokens.\nlet fastModeHeaderLatched = getFastModeHeaderLatched()\nif (!fastModeHeaderLatched && isFastMode) {\n  fastModeHeaderLatched = true\n  setFastModeHeaderLatched(true) // permanent for session\n}', codeLang: 'typescript', spark: 'Pressing Shift+K to toggle fast mode would waste $0.07 in cached tokens. So they latch the header ON forever. This is the level of cost obsession.' },
-        { label: 'Detect', title: '16-Factor Cache Break Detection', source: 'src/services/api/promptCacheBreakDetection.ts:247', description: 'Hashes 16+ factors before each call. If cache_read_input_tokens drops >5% or >2K tokens, it attributes the cause.', spark: 'The detector tracks factors that "should NOT break cache anymore" — meaning they USED to break it, and the fix needed verification.' },
-        { label: 'Edit', title: 'Microcompact Cache Editing', source: 'src/services/compact/microCompact.ts:305', description: 'Adds cache_reference to tool_result blocks. Sends cache_edits with delete requests. Server removes content from cache without client retransmitting.', spark: 'Deletes content from the server\'s cache without touching local messages. The prompt cache break detector suppresses the expected token drop so it\'s not flagged as a cache miss.' },
+        {
+          label: 'Cost', title: 'The Cost Problem', description: 'Every API call sends the full context. 100K tokens at Opus pricing = ~$1.50/call. Over 50 calls/session = $75. Cache reads cost 90% less — the same tokens cost ~10× less when cached.',
+          spark: '$75/session → $10 with caching. That single optimization is what makes the product economically viable.',
+          demo: 'cache-cost' as const,
+        },
+        {
+          label: 'Latches', title: 'Beta Feature Latches — Preserve Despite Toggle', source: 'src/services/api/claude.ts:1405',
+          description: 'Beta headers like fast-mode, cache-editing, and extended-thinking are "latched ON" once first activated. Even if you toggle the feature off mid-session, the header keeps being sent — because changing it would bust the server-side cache key and invalidate 50-70K cached tokens.',
+          code: '// Sticky-on latches for beta headers:\n// Once sent, always sent — for the session lifetime.\nlet fastModeHeaderLatched = getFastModeHeaderLatched()\n\nif (!fastModeHeaderLatched && isFastMode) {\n  fastModeHeaderLatched = true\n  setFastModeHeaderLatched(true) // permanent for session\n}\n\n// 4 latched headers:\n// - fast-mode (Shift+K)\n// - AFK / interleaved-thinking\n// - cache-editing (microcompact)\n// - thinking-clear',
+          codeLang: 'typescript',
+          spark: 'Pressing Shift+K to toggle fast mode would waste $0.07 in cached tokens. So they make the toggle permanent. The UI lies to you for your own financial benefit.',
+        },
+        {
+          label: 'Breaks', title: '16-Factor Cache Break Logging', source: 'src/services/api/promptCacheBreakDetection.ts:247',
+          description: 'Before every API call, 16+ factors are hashed. After the response, if cache_read_input_tokens drops >5% or >2K tokens, the logger identifies which factor changed and logs the cause.',
+          code: '// Factors tracked for cache break detection:\nconst cacheKey = hashAll([\n  systemPrompt,      // 1. system prompt content\n  toolSchemas,       // 2. tool definitions\n  model,             // 3. model name\n  maxTokens,         // 4. max_tokens value\n  thinkingEnabled,   // 5. extended thinking\n  betaHeaders,       // 6. beta header set\n  cacheTTL,          // 7. cache TTL (5min vs 1h)\n  // ... 9 more factors\n])\n\n// After response:\nif (cacheReadDrop > 0.05 * prevCacheRead) {\n  log.warn(`Cache broken by: ${diffFactors(prev, curr)}`)\n}',
+          codeLang: 'typescript',
+          spark: 'The log tracks factors marked "should NOT break cache anymore" — meaning each entry represents a past bug that was fixed and then verified.',
+        },
+        {
+          label: 'Edit', title: 'Microcompact Intentionally Breaks the Cache', source: 'src/services/compact/microCompact.ts:305',
+          description: 'Microcompact sends cache_edits to delete old tool results from the server\'s KV cache. This deliberately causes a partial cache miss — but the break detector is told to suppress the alert so it\'s not flagged as an error.',
+          code: '// Microcompact: delete from server cache\nconst cacheEdits = {\n  deletes: oldToolResults.map(r => ({\n    cache_reference: r.cache_reference_id\n  }))\n}\n\n// Sent as a special request parameter:\nawait anthropic.messages.create({\n  ...params,\n  cache_edits: cacheEdits  // server deletes these blocks\n})\n\n// IMPORTANT: tell break detector to ignore the drop:\nsuppressNextCacheBreakAlert()\n// Without this, the drop would be logged as a bug',
+          codeLang: 'typescript',
+          spark: 'Microcompact breaks the cache on purpose. Then it tells the cache break detector to ignore it. One system lies to another to prevent false positives.',
+        },
       ],
       subItems: [
         {
@@ -386,7 +387,7 @@ export const useBoardStore = create<BoardState>((set) => ({
     },
     {
       id: HOOKS_ID,
-      position: { x: 910, y: 600 },
+      position: { x: 1100, y: 660 },
       width: 360,
       height: 480,
       title: 'Hooks',
@@ -397,10 +398,8 @@ export const useBoardStore = create<BoardState>((set) => ({
       animated: true,
       backgroundType: 'hooks',
       storySteps: [
-        { label: 'Events', title: '27 Lifecycle Events', source: 'src/utils/hooks.ts', description: 'PreToolUse, PostToolUse, Stop, SessionStart/End, SubagentStart/Stop, PermissionRequest, UserPromptSubmit, FileChanged, ConfigChange, PreCompact/PostCompact, and 15 more.', spark: 'The hooks file is 5,022 lines — bigger than the agentic loop itself. The extensibility layer is more complex than the core.' },
-        { label: 'Types', title: '5 Hook Types', description: 'Shell command (spawn + JSON I/O), LLM prompt (model evaluates safety), HTTP POST (webhook), Agent (structured reasoning), TypeScript callback (inline function). All receive JSON context.', code: '{\n  "hooks": {\n    "PreToolUse": [{\n      "matcher": "Bash",\n      "hooks": [{\n        "type": "command",\n        "command": "python3 validate_command.py",\n        "timeout": 5\n      }]\n    }]\n  }\n}', codeLang: 'json' },
-        { label: 'Block', title: 'PreToolUse — Block or Modify', source: 'src/utils/hooks.ts:3394', description: 'Runs before every tool call. Can deny execution, modify input (updatedInput), approve, or inject additionalContext. Fast-path for trusted tools.', spark: 'A hook can silently rewrite what a tool sees. The model never knows the hook intervened.' },
-        { label: 'Stop', title: 'Stop Hook — Force Continue', source: 'src/utils/hooks.ts:3639', description: 'Fires when the model thinks it\'s done. If the hook returns exit code 2, the model gets blocking feedback and CONTINUES.', code: '// The model literally cannot stop until tests pass:\n"command": "bash -c \'if ! npm test 2>/dev/null; then echo Tests failing >&2; exit 2; fi\'"', codeLang: 'bash', spark: 'The model literally cannot stop until tests pass. This is how you enforce quality gates — not by code validation, but by making the model keep working.' },
+        { label: 'What', title: '27 Lifecycle Hook Events', source: 'src/utils/hooks.ts', description: 'Shell commands, LLM prompts, HTTP webhooks, or TypeScript callbacks that fire at 27 lifecycle points — PreToolUse, PostToolUse, Stop, SessionStart/End, UserPromptSubmit, PreCompact, and more. All receive JSON context.', code: '// ~/.claude/settings.json\n{\n  "hooks": {\n    "PreToolUse": [{\n      "matcher": "Bash",\n      "hooks": [{ "type": "command", "command": "validate.py" }]\n    }],\n    "Stop": [{\n      "hooks": [{ "type": "command", "command": "npm test || exit 2" }]\n    }]\n  }\n}', codeLang: 'json', spark: 'The hooks file is 5,022 lines — bigger than the agentic loop itself. The extensibility layer is more complex than the core.' },
+        { label: 'Stop', title: 'Stop Hook — Set Exit Conditions', source: 'src/utils/hooks.ts:3639', description: 'Fires when the model thinks it\'s done. Return exit code 2 → blocking feedback injected → model MUST continue. Use this to enforce any condition before the loop exits.', code: '// Model cannot exit until ALL conditions pass:\n{\n  "Stop": [{\n    "hooks": [{\n      "type": "command",\n      // exit 2 = blocking, model must keep working\n      "command": "bash -c \'if ! npm test 2>/dev/null; then echo Tests failing >&2; exit 2; fi\'"\n    }]\n  }]\n}\n\n// Other exit conditions you can enforce:\n// - lint passes\n// - coverage threshold met\n// - PR description written\n// - no TODO comments remain', codeLang: 'json', spark: 'The model literally cannot stop until your conditions pass. This isn\'t code validation — it\'s making the model keep working until reality matches your requirements.', demo: 'hook-stop' as const },
       ],
       subItems: [
         {
@@ -433,109 +432,13 @@ export const useBoardStore = create<BoardState>((set) => ({
         },
       ],
     },
-    {
-      id: ADVISOR_ID,
-      position: { x: 1400, y: 600 },
-      width: 360,
-      height: 440,
-      title: 'Advisor Model',
-      content: 'Server-side tool where a cheaper model (Haiku) silently reviews the main model\'s work mid-generation — feedback injected into system prompt before Opus responds.',
-      filePath: '/src/utils/advisor.ts',
-      color: '#E040A0',
-      animated: true,
-      backgroundType: 'neural',
-      storySteps: [
-        { label: 'How', title: 'Server-Side Tool', source: 'src/utils/advisor.ts:9', description: 'Opus calls server_tool_use(name="advisor") during generation → API routes to Haiku internally → Haiku returns feedback → Opus reads it and continues. All inside one streaming response.', spark: 'It\'s not two API calls. The advisor runs INSIDE the same API call via a server-side tool. The client never makes a second request.' },
-        { label: 'Encrypt', title: 'Encrypted Feedback', source: 'src/utils/advisor.ts:16', description: 'advisor_redacted_result blocks contain encrypted_content — can\'t be decrypted client-side. The main model sees feedback server-side; the user only sees "Advisor reviewed."', spark: 'The advisor can say things the user can\'t see. Encrypted feedback for internal reasoning and risk assessment.' },
-        { label: 'When', title: 'When to Advise', source: 'src/utils/advisor.ts:130', description: 'Call BEFORE substantive work, AFTER task completion, when STUCK. On conflict between data and advice: do a reconciliation call, not a silent switch.', spark: '"Give advice serious weight — only override with empirical evidence." The model is told to TRUST the advisor over its own judgment unless it has proof.' },
-        { label: 'Cost', title: 'Cost Asymmetry', description: 'Haiku call costs ~$0.001. Catches mistakes before Opus spends $0.15. Advisor tokens billed at advisor model rate, tracked separately.', spark: 'A $0.001 Haiku call that catches one mistake saves $0.15 of wasted Opus output. 150:1 leverage ratio.' },
-      ],
-      subItems: [
-        {
-          label: 'server_tool_use',
-          description: 'Opus calls advisor tool during generation → API routes to Haiku internally → Haiku returns feedback → Opus reads it and continues. All inside one streaming response.',
-          color: '#E040A0',
-          filePath: 'src/utils/advisor.ts',
-          line: 9,
-        },
-        {
-          label: 'Encrypted Feedback',
-          description: 'advisor_redacted_result blocks contain encrypted_content — can\'t be decrypted client-side. The main model sees it server-side; the user sees "Advisor reviewed."',
-          color: '#E040A0',
-          filePath: 'src/utils/advisor.ts',
-          line: 16,
-        },
-        {
-          label: 'When to Advise',
-          description: 'Call BEFORE substantive work, AFTER task completion, when STUCK. Give advice serious weight — only override with empirical evidence. On conflict: reconciliation call.',
-          color: '#E040A0',
-          filePath: 'src/utils/advisor.ts',
-          line: 130,
-        },
-        {
-          label: 'Cost Asymmetry',
-          description: 'Haiku costs ~$0.001/call. Catches mistakes before Opus spends $0.15. Advisor tokens billed at advisor model rate, tracked separately.',
-          color: '#E040A0',
-          filePath: 'src/cost-tracker.ts',
-          line: 304,
-        },
-      ],
-    },
-    {
-      id: AUTO_ID,
-      position: { x: 1830, y: 600 },
-      width: 360,
-      height: 480,
-      title: 'Autonomous Mode',
-      content: 'Kairos: tick-driven autonomous agent + YOLO classifier for auto-approving safe tool calls. Combines persistent sessions with intelligent permission gating.',
-      filePath: '/src/utils/permissions/yoloClassifier.ts',
-      color: '#D97706',
-      animated: true,
-      backgroundType: 'shield',
-      storySteps: [
-        { label: 'YOLO', title: 'YOLO Classifier', source: 'src/utils/permissions/yoloClassifier.ts', description: 'LLM call evaluates tool safety — returns shouldBlock boolean. One classifier call per tool boundary, zero cost for safe-listed tools.', spark: 'It\'s literally called "YOLO Classifier" in the source code. That\'s the actual variable name.' },
-        { label: 'Ticks', title: 'Kairos Tick Timer', source: 'src/main.tsx:1048', description: 'Background timer injects <tick>HH:MM:SS</tick> messages every N seconds. The system prompt says: "treat ticks as \'you\'re awake, what now?\'"', spark: 'Each wake-up costs an API call, but the prompt cache expires after 5 minutes of inactivity — balance accordingly. This is cache-aware autonomous pacing.' },
-        { label: 'Tools', title: 'Sleep + SendUserMessage', description: 'Sleep pauses ticks while waiting. SendUserMessage is the agent-to-user channel — plain text output may not be visible, put important results here.', spark: 'The prompt says: "If you have nothing useful to do on a tick, you MUST call Sleep. Never respond with only a status message — that wastes a turn and burns tokens."' },
-        { label: 'Setup', title: 'Permission Setup', source: 'src/utils/permissions/permissionSetup.ts:689', description: 'CLI initialization: resolves --permission-mode auto, checks feature gates, strips dangerous permissions.', spark: 'Bash(*) and Agent(*) are stripped before auto mode starts. The most dangerous tool permissions are removed, not just gated.' },
-      ],
-      subItems: [
-        {
-          label: 'YOLO Classifier',
-          description: 'LLM call evaluates tool safety — returns shouldBlock boolean. One classifier call per tool boundary, zero cost for safe-listed tools.',
-          color: '#D97706',
-          filePath: 'src/utils/permissions/yoloClassifier.ts',
-          line: 1012,
-        },
-        {
-          label: 'Tick Timer (Kairos)',
-          description: 'Background timer injects <tick> messages every N seconds. Model decides: work, Sleep, or SendUserMessage. Prompt cache expires after 5 min — balance pacing.',
-          color: '#D97706',
-          filePath: 'src/main.tsx',
-          line: 1048,
-        },
-        {
-          label: 'Sleep + SendUserMessage',
-          description: 'Sleep pauses ticks while waiting. SendUserMessage is the agent-to-user communication channel — plain text may not be visible, put results here.',
-          color: '#D97706',
-          filePath: 'src/constants/prompts.ts',
-          line: 860,
-        },
-        {
-          label: 'Permission Setup',
-          description: 'CLI initialization: --permission-mode auto flag, feature gates, strips dangerous permissions (Bash(*), Agent(*)), activates auto mode state machine.',
-          color: '#D97706',
-          filePath: 'src/utils/permissions/permissionSetup.ts',
-          line: 689,
-        },
-      ],
-    },
 
     // ════════════════════════════════════════════════════════════
     //  ROW 3 — Compaction (below caching)
     // ════════════════════════════════════════════════════════════
     {
       id: COMPACT_ID,
-      position: { x: 480, y: 1150 },
+      position: { x: 650, y: 1160 },
       width: 360,
       height: 480,
       title: 'Compaction',
@@ -546,9 +449,28 @@ export const useBoardStore = create<BoardState>((set) => ({
       animated: true,
       backgroundType: 'compactor',
       storySteps: [
-        { label: 'Estimate', title: 'Token Estimation', source: 'src/services/compact/autoCompact.ts', description: 'Estimates tokens at ~3.5 chars/token. Fires at 70% of context window (effective_context - 13K buffer).', spark: 'The threshold is 70%. Below that, nothing happens. Above it, the 5-layer cascade kicks in — from free (snip) to expensive (LLM summary).' },
-        { label: 'Micro', title: 'Microcompact (Two Paths)', source: 'src/services/compact/microCompact.ts:253', description: 'Path 1 (cache warm): cache_edits delete from server cache without retransmitting. Path 2 (cache cold, 60min gap): mutate local messages directly.', spark: 'The 60-minute gap trigger matches the server\'s 1-hour cache TTL. If you were away for lunch, the cache is cold anyway — just rewrite the messages.' },
-        { label: 'Full', title: 'Full LLM Compaction', source: 'src/services/compact/compact.ts:387', description: 'Sends old messages to Claude for 9-section structured summary: Primary Request, Key Concepts, Files & Code, Errors & Fixes, All User Messages, Pending Tasks, Current Work, Next Step.', spark: 'The compact boundary is a linked list: headUuid → anchorUuid → tailUuid. Messages survive disk round-trips and crash recovery via serializable UUID pointers.' },
+        {
+          label: 'Estimate', title: 'Token Estimation — chars / 3.5', source: 'src/services/compact/autoCompact.ts',
+          description: 'Claude Code never calls the tokenizer API — too slow. Instead it estimates: chars ÷ 3.5 for most content, chars ÷ 2 for JSON (JSON is token-dense). Compaction fires at 70% of the context window.',
+          code: '// Token estimation (no API call):\nfunction estimateTokens(content: string, type?: string): number {\n  if (type === "json") {\n    return Math.ceil(content.length / 2)  // JSON is dense\n  }\n  return Math.ceil(content.length / 3.5) // prose / code\n}\n\n// Fires at 70% threshold:\nconst threshold = effectiveContextWindow * 0.70\nif (estimatedTokens > threshold) {\n  await runCompactionPipeline(state)\n}',
+          codeLang: 'typescript',
+          spark: 'chars ÷ 3.5 for text, chars ÷ 2 for JSON. A rough estimate that\'s fast enough to run every turn without slowing the loop.',
+        },
+        {
+          label: 'Micro', title: 'Microcompact — Two Paths', source: 'src/services/compact/microCompact.ts:253',
+          description: 'Path 1 (cache warm): sends cache_edits to delete old tool results from the server cache — no retransmission, cache stays intact. Path 2 (cache cold, >60min gap): mutates local messages directly. The 60-min trigger matches the server\'s 1-hour cache TTL.',
+          code: '// Path 1: cache is warm, delete server-side\nif (cacheIsWarm) {\n  await sendCacheEdits({\n    deletes: oldToolResultIds.map(id => ({ cache_reference: id }))\n  })\n  // Server removes content from KV cache\n  // Local messages unchanged\n  // Cache break detector SUPPRESSES the token drop\n  // so it\'s not flagged as an unexpected cache miss\n}\n\n// Path 2: >60 min gap, cache cold anyway\nelse {\n  messages = messages.map(m =>\n    isOldToolResult(m)\n      ? { ...m, content: "[compacted]" }\n      : m\n  )\n}',
+          codeLang: 'typescript',
+          spark: 'Microcompact deletes from the server\'s cache without touching your local messages. The cache break detector is told to ignore the expected token drop.',
+        },
+        {
+          label: 'Full', title: 'Full LLM Compaction', source: 'src/services/compact/compact.ts:387',
+          description: 'Sends old messages to Claude for a 9-section structured summary. Reserves 20K output tokens. Replaces originals with a compact boundary linked list.',
+          code: '// 9-section summary prompt:\n// 1. Primary Request & Intent\n// 2. Key Technical Concepts\n// 3. Files & Code Modified\n// 4. Errors & Fixes\n// 5. All User Messages (verbatim)\n// 6. Pending Tasks\n// 7. Current Work\n// 8. Next Steps\n// 9. Important Constraints\n\n// Compact boundary is a linked list:\n// headUuid → anchorUuid → tailUuid\n// Survives disk round-trips + crash recovery',
+          codeLang: 'typescript',
+          spark: 'The compact boundary is a linked list of UUIDs over messages. Survives disk round-trips and crash recovery — sessions resume exactly where they left off.',
+          demo: 'compaction' as const,
+        },
       ],
       subItems: [
         {
@@ -576,12 +498,9 @@ export const useBoardStore = create<BoardState>((set) => ({
     },
   ],
   connections: [
-    { from: MEMORY_ID,  to: PROMPT_ID,   label: 'CLAUDE.md + memory' },
     { from: PROMPT_ID,  to: CORE_ID,     label: 'buildSystemPrompt()' },
     { from: CORE_ID,    to: AGENT_ID,    label: 'AgentTool' },
     { from: AGENT_ID,   to: MAILBOX_ID,  label: 'SendMessage' },
-    { from: AGENT_ID,   to: ADVISOR_ID,  label: 'advisor tool' },
-    { from: AGENT_ID,   to: AUTO_ID,     label: 'Kairos / auto-mode' },
     { from: CORE_ID,    to: HOOKS_ID,    label: 'executeHooks' },
     { from: CORE_ID,    to: CACHE_ID,    label: 'cache_control' },
     { from: CORE_ID,    to: COMPACT_ID,  label: 'autoCompact' },

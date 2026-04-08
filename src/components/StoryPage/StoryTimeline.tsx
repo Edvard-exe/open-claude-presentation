@@ -19,7 +19,7 @@ interface StoryTimelineProps {
 export function StoryTimeline({ steps, color, activeStep, onStepChange }: StoryTimelineProps) {
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
   useEffect(() => {
     if (!playing) { clearInterval(timerRef.current); return; }

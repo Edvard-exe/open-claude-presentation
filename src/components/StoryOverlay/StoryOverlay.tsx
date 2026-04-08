@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useBoardStore } from '../../store/boardStore';
 import type { StoryStep } from '../../types/board';
+import { AdvisorDemo } from './AdvisorDemo';
+import { KairosDemo } from './KairosDemo';
+import { LoopDemo } from './LoopDemo';
+import { StreamDemo } from './StreamDemo';
+import { ParallelToolsDemo } from './ParallelToolsDemo';
+import { CacheCostDemo } from './CacheCostDemo';
+import { HookStopDemo } from './HookStopDemo';
+import { PermissionGateDemo } from './PermissionGateDemo';
+import { CompactionDemo } from './CompactionDemo';
+import { MailboxRouteDemo } from './MailboxRouteDemo';
+import { MemoryLayersDemo } from './MemoryLayersDemo';
 import './StoryOverlay.css';
 
 export function StoryOverlay() {
@@ -129,6 +140,19 @@ function StepCard({ step, index }: { step: StoryStep; index: number }) {
           </div>
         </div>
       )}
+
+      {/* Animated demos */}
+      {step.demo === 'advisor'          && <AdvisorDemo />}
+      {step.demo === 'kairos'           && <KairosDemo />}
+      {step.demo === 'loop'             && <LoopDemo />}
+      {step.demo === 'stream'           && <StreamDemo />}
+      {step.demo === 'parallel-tools'   && <ParallelToolsDemo />}
+      {step.demo === 'cache-cost'       && <CacheCostDemo />}
+      {step.demo === 'hook-stop'        && <HookStopDemo />}
+      {step.demo === 'permission-gate'  && <PermissionGateDemo />}
+      {step.demo === 'compaction'       && <CompactionDemo />}
+      {step.demo === 'mailbox-route'    && <MailboxRouteDemo />}
+      {step.demo === 'memory-layers'    && <MemoryLayersDemo />}
 
       {/* Footer */}
       {step.footer && (

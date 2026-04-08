@@ -60,11 +60,11 @@ flowchart TB
         DIRECTIVE["Per-child directive<br/><i>Only this differs</i>"]
     end
 
-    subgraph WORKERS["Sub-Agent Workers"]
-        W1["🔧 Coder<br/><i>Full tool set</i>"]
-        W2["🔍 Researcher<br/><i>Read, Glob, Grep, Web</i>"]
-        W3["📋 Reviewer<br/><i>Read-only tools</i>"]
-        W4["🧪 Tester<br/><i>Bash, Read, Grep</i>"]
+    subgraph WORKERS["Sub-Agent Types"]
+        W1["🔧 general-purpose<br/><i>Full tool set (default)</i>"]
+        W2["🔍 Explore<br/><i>Read, Glob, Grep, Web</i>"]
+        W3["📋 Plan<br/><i>Architecture & planning</i>"]
+        W4["✅ verification<br/><i>Review & verify</i>"]
     end
 
     subgraph ISOLATION["Worktree Isolation"]
@@ -170,17 +170,16 @@ flowchart TB
         STOP_F["StopFailure"]
     end
 
-    subgraph TYPES["5 Hook Types"]
-        CMD["🖥️ Shell Command<br/><i>spawn + JSON I/O</i>"]
-        PROMPT["🤖 LLM Prompt<br/><i>Model evaluates safety</i>"]
-        HTTP["🌐 HTTP POST<br/><i>Webhook to external</i>"]
-        CB["⚡ Callback<br/><i>Inline TypeScript</i>"]
-        AG["🏭 Agent<br/><i>Structured reasoning</i>"]
+    subgraph TYPES["4 Hook Types (configurable in settings.json)"]
+        CMD["🖥️ command<br/><i>Shell spawn + JSON I/O</i>"]
+        PROMPT["🤖 prompt<br/><i>LLM evaluates safety</i>"]
+        HTTP["🌐 http<br/><i>POST webhook</i>"]
+        AG["🏭 agent<br/><i>Structured reasoning</i>"]
     end
 
     START --> SUBMIT --> PRE --> POST --> STOP --> ENDD
-    PRE -->|"blocked"| FAIL
-    STOP -->|"exit code 2"| PRE
+    PRE -->|"exit code 2"| FAIL
+    STOP -->|"exit code 2<br/>blocking error"| ENDD
 
     style SESSION fill:#FFF7ED,stroke:#EA580C,stroke-width:1.5px,color:#9A3412
     style USER fill:#FEF3C7,stroke:#D97706,stroke-width:1.5px,color:#92400E
@@ -194,47 +193,41 @@ flowchart TB
 
   'compaction-pipeline': `%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0891B2', 'primaryTextColor': '#fff', 'primaryBorderColor': '#0E7490', 'lineColor': '#1E1B4B', 'edgeLabelBackground': '#CFFAFE', 'secondaryColor': '#CFFAFE', 'tertiaryColor': '#ECFEFF', 'fontFamily': 'system-ui, sans-serif', 'fontSize': '18px' }}}%%
 flowchart LR
-    TURN["Turn Start<br/><i>maybe_compact()</i>"]
-    EST["Estimate Tokens<br/><i>chars / 3.5</i>"]
-    THRESHOLD{"tokens > 70%<br/>context limit?"}
+    TURN["Turn Start<br/><i>autoCompactIfNeeded()</i>"]
+    EST["Estimate Tokens<br/><i>chars / 4</i>"]
+    THRESHOLD{"tokens ><br/>contextWindow − 13K?"}
 
-    subgraph LAYER1["Layer 1: Tool Result Budget"]
-        BUDGET["Per-message budget<br/><i>Truncate oversized results</i>"]
+    subgraph LAYER1["Layer 1: Tool Result Truncation"]
+        BUDGET["Strip oversized results<br/><i>Images stripped before summary</i>"]
     end
 
-    subgraph LAYER2["Layer 2: Snip"]
-        SNIP["snip_old_tool_results<br/><i>Keep first half + last quarter</i><br/><i>Preserve last 6 turns</i>"]
-    end
-
-    subgraph LAYER3["Layer 3: Microcompact"]
+    subgraph LAYER2["Layer 2: Microcompact"]
         MC_CACHE["Cache editing path<br/><i>cache_edits: delete refs</i><br/><i>Server-side only</i>"]
         MC_TIME["Time-based path<br/><i>Mutate local messages</i><br/><i>60min gap trigger</i>"]
     end
 
-    subgraph LAYER4["Layer 4: Context Collapse"]
-        COLLAPSE["Project collapsed view<br/><i>Merge similar messages</i>"]
+    subgraph LAYER3["Layer 3: Full Compact"]
+        SUMMARY["LLM Summary Call<br/><b>9-section structured format</b>"]
+        BOUNDARY["Compact Boundary<br/><i>logicalParentUuid pointers</i>"]
+        KEEP["Keep recent messages<br/><i>+ summary + preserved</i>"]
     end
 
-    subgraph LAYER5["Layer 5: Full Compact"]
-        SUMMARY["LLM Summary Call<br/><b>9-section structured format</b>"]
-        BOUNDARY["Compact Boundary<br/><i>headUuid → anchorUuid → tailUuid</i>"]
-        KEEP["Keep 30% recent<br/><i>+ summary + preserved</i>"]
-    end
+    COLLAPSE["Context Collapse<br/><i>(parallel system,<br/>suppresses autocompact)</i>"]
 
     DONE["Continue Turn<br/><i>Context reduced</i>"]
 
     TURN --> EST --> THRESHOLD
     THRESHOLD -->|"No"| DONE
-    THRESHOLD -->|"Yes"| BUDGET --> SNIP --> MC_CACHE & MC_TIME
-    MC_CACHE & MC_TIME --> COLLAPSE --> SUMMARY --> BOUNDARY --> KEEP --> DONE
+    THRESHOLD -->|"Yes"| BUDGET --> MC_CACHE & MC_TIME
+    MC_CACHE & MC_TIME --> SUMMARY --> BOUNDARY --> KEEP --> DONE
+    THRESHOLD -.->|"feature gate"| COLLAPSE -.-> DONE
 
     style LAYER1 fill:#ECFEFF,stroke:#0891B2,stroke-width:1.5px,color:#155E75
-    style LAYER2 fill:#F0FDF4,stroke:#16A34A,stroke-width:1.5px,color:#166534
-    style LAYER3 fill:#FEF3C7,stroke:#D97706,stroke-width:1.5px,color:#92400E
-    style LAYER4 fill:#FDF2F8,stroke:#DB2777,stroke-width:1.5px,color:#9D174D
-    style LAYER5 fill:#EFF6FF,stroke:#2563EB,stroke-width:1.5px,color:#1E40AF
+    style LAYER2 fill:#FEF3C7,stroke:#D97706,stroke-width:1.5px,color:#92400E
+    style LAYER3 fill:#EFF6FF,stroke:#2563EB,stroke-width:1.5px,color:#1E40AF
     style THRESHOLD fill:#0891B2,color:#fff,stroke:#0E7490,stroke-width:2px
     style SUMMARY fill:#2563EB,color:#fff,stroke:#1D4ED8,stroke-width:2px
     style BOUNDARY fill:#7C3AED,color:#fff,stroke:#6D28D9,stroke-width:2px
+    style COLLAPSE fill:#FDF2F8,stroke:#DB2777,stroke-width:1.5px,color:#9D174D
 `,
 };

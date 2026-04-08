@@ -29,6 +29,7 @@ export interface StoryStep {
   terminal?: { command: string; output: string };
   spark?: string;
   footer?: string;
+  demo?: 'advisor' | 'kairos' | 'loop' | 'stream' | 'parallel-tools' | 'cache-cost' | 'hook-stop' | 'permission-gate' | 'compaction' | 'mailbox-route' | 'memory-layers';
 }
 
 export interface TileData {

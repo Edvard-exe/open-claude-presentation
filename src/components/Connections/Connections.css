@@ -1,0 +1,13 @@
+.connection__line {
+  animation: dashFlow 1.5s linear infinite;
+}
+
+@keyframes dashFlow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.connection__glow {
+  filter: blur(2px);
+}

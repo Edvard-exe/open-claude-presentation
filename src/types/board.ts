@@ -3,6 +3,14 @@ export interface Position {
   y: number;
 }
 
+export interface TileSubItem {
+  label: string;
+  description?: string;
+  color?: string;
+  filePath?: string;
+  line?: number;
+}
+
 export interface TileData {
   id: string;
   position: Position;
@@ -12,16 +20,26 @@ export interface TileData {
   content?: string;
   filePath?: string;
   color?: string;
+  url?: string;
   diagramId?: string;
   animated?: boolean;
+  subItems?: TileSubItem[];
+}
+
+export interface Connection {
+  from: string;
+  to: string;
+  label?: string;
 }
 
 export interface BoardState {
   pan: Position;
   zoom: number;
   tiles: TileData[];
+  connections: Connection[];
   selectedTileId: string | null;
   openDiagramId: string | null;
+  openSubItemData: TileSubItem | null;
 
   setPan: (pan: Position) => void;
   setZoom: (zoom: number) => void;
@@ -32,4 +50,6 @@ export interface BoardState {
   selectTile: (id: string | null) => void;
   openDiagram: (diagramId: string) => void;
   closeDiagram: () => void;
+  openSubItem: (item: TileSubItem) => void;
+  closeSubItem: () => void;
 }

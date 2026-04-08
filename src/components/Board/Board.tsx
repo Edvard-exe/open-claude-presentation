@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useBoardStore } from '../../store/boardStore';
 import { useCanvasGestures } from '../../hooks/useCanvasGestures';
 import { Tile } from '../Tile/Tile';
+import { Connections } from '../Connections/Connections';
 import './Board.css';
 
 export function Board() {
@@ -35,6 +36,7 @@ export function Board() {
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
         }}
       >
+        <Connections />
         {tiles.map((tile) => (
           <Tile key={tile.id} tile={tile} />
         ))}

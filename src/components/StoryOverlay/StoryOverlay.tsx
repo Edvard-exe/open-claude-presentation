@@ -14,6 +14,23 @@ import { MailboxRouteDemo } from './MailboxRouteDemo';
 import { MemoryLayersDemo } from './MemoryLayersDemo';
 import './StoryOverlay.css';
 
+const SOURCE_ROOT = '/Users/illiafilipas/code/collection-claude-code-source-code/claude-code-source-code';
+
+function SourceLink({ source, className }: { source: string; className?: string }) {
+  const match = source.match(/^(.+?):(\d+)$/);
+  const filePath = match ? match[1] : source;
+  const line = match ? match[2] : undefined;
+  const cursorHref = `cursor://file${SOURCE_ROOT}/${filePath}${line ? `:${line}:1` : ''}`;
+  return (
+    <a className={className} href={cursorHref} onClick={(e) => e.stopPropagation()} title="Open in Cursor">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ marginRight: 4, verticalAlign: 'middle' }}>
+        <path d="M3 1H1.5A.5.5 0 001 1.5v7a.5.5 0 00.5.5h7a.5.5 0 00.5-.5V7M6 1h3v3M9 1L4.5 5.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+      {source}
+    </a>
+  );
+}
+
 export function StoryOverlay() {
   const divedTileId = useBoardStore((s) => s.divedTileId);
   const tiles = useBoardStore((s) => s.tiles);
@@ -63,7 +80,7 @@ export function StoryOverlay() {
         <div className="story-overlay__header">
           <button className="story-overlay__back" onClick={undive}>← Back</button>
           <h1 className="story-overlay__title">{tile.title}</h1>
-          {tile.filePath && <span className="story-overlay__source">{tile.filePath}</span>}
+          {tile.filePath && <SourceLink source={tile.filePath} className="story-overlay__source" />}
         </div>
 
         {tile.content && <p className="story-overlay__desc">{tile.content}</p>}
@@ -108,7 +125,7 @@ function StepCard({ step, index }: { step: StoryStep; index: number }) {
           <span className="story-card__num">{index + 1}</span>
           <span className="story-card__title">{step.title}</span>
         </div>
-        {step.source && <span className="story-card__src">{step.source}</span>}
+        {step.source && <SourceLink source={step.source} className="story-card__src" />}
       </div>
 
       <p className="story-card__desc">{step.description}</p>
@@ -119,7 +136,7 @@ function StepCard({ step, index }: { step: StoryStep; index: number }) {
       {/* Code block */}
       {step.code && (
         <div className="story-code">
-          <div className="story-code__header">{step.codeLang || 'code'} {step.source && `· ${step.source}`}</div>
+          <div className="story-code__header">{step.codeLang || 'code'} {step.source && <> · <SourceLink source={step.source} /></>}</div>
           <div className="story-code__body">{step.code}</div>
         </div>
       )}

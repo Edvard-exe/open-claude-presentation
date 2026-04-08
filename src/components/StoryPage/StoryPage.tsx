@@ -62,7 +62,7 @@ const LOOP_STEPS: StoryStepData[] = [
   {
     label: 'Loop', title: 'Execute Tools → Loop', source: 'src/services/tools/toolOrchestration.ts:19',
     description: 'partitionToolCalls() batches tools: read-only concurrent (up to 10 parallel), writes serial. Results appended to messages, loop continues.',
-    content: <TerminalMockup title="agent.py"><span className="terminal__highlight">while True:</span>{'\n  stream → collect tool_use blocks\n  '}<span className="terminal__highlight">if not tool_calls: break</span>{'\n  for tool in tool_calls:\n    result = execute(tool)\n    messages.append(result)'}</TerminalMockup>,
+    content: <TerminalMockup title="src/query.ts:307"><span className="terminal__highlight">while (true) {'{'}</span>{'\n  let { toolUseContext } = state\n  const { messages, turnCount, stopHookActive } = state\n  '}<span className="terminal__highlight">// stream → collect tool_use blocks</span>{'\n  const msgToolUseBlocks = message.message.content.filter(\n    content => content.type === \'tool_use\',\n  )\n  '}<span className="terminal__highlight">if (!needsFollowUp) break</span>{'\n  // execute tools, build next state\n  state = { messages: [...messagesForQuery, ...toolResults],\n    transition: { reason: \'next_turn\' } }\n} // while (true)'}</TerminalMockup>,
     footer: "This is the entire architecture. No LangChain, no state machine. Just <code>while(true)</code> + prompts + tools.",
   },
   {
@@ -142,7 +142,7 @@ const CACHE_STEPS: StoryStepData[] = [
   {
     label: 'Latches', title: 'Sticky-On Beta Latches', source: 'src/services/api/claude.ts:1405',
     description: 'Once a beta header is sent, it stays ON for the session. Toggling fast mode would bust ~50-70K cached tokens. 4 headers: fast mode, AFK, cache editing, thinking clear.',
-    content: <TerminalMockup title="claude.ts"><span className="terminal__highlight">// Sticky-on: once first sent, keeps being sent</span>{'\nlet fastModeHeaderLatched = getFastModeHeaderLatched()\nif (!fastModeHeaderLatched && isFastMode) {\n  fastModeHeaderLatched = true\n  '}<span className="terminal__highlight">setFastModeHeaderLatched(true)</span>{' // permanent\n}'}</TerminalMockup>,
+    content: <TerminalMockup title="src/services/api/claude.ts:1405"><span className="terminal__highlight">// Sticky-on latches for dynamic beta headers. Once first</span>{'\n'}<span className="terminal__highlight">// sent, keeps being sent so mid-session toggles don\'t</span>{'\n'}<span className="terminal__highlight">// bust ~50-70K cached tokens.</span>{'\n\nlet afkHeaderLatched = getAfkModeHeaderLatched() === true\nif (!afkHeaderLatched && isAgenticQuery &&\n    shouldIncludeFirstPartyOnlyBetas()) {\n  afkHeaderLatched = true\n  '}<span className="terminal__highlight">setAfkModeHeaderLatched(true)</span>{'\n}\n\nlet fastModeHeaderLatched = getFastModeHeaderLatched() === true\nif (!fastModeHeaderLatched && isFastMode) {\n  fastModeHeaderLatched = true\n  '}<span className="terminal__highlight">setFastModeHeaderLatched(true)</span>{'\n}'}</TerminalMockup>,
   },
   {
     label: 'Detect', title: '16-Factor Cache Break Detection', source: 'src/services/api/promptCacheBreakDetection.ts:247',
@@ -289,7 +289,12 @@ export function StoryPage() {
               <div className="feature-card__desc">{f.desc}</div>
               {expandedFeature === f.title && (
                 <div className="feature-card__details">
-                  <div className="feature-card__source">{f.source}</div>
+                  <a className="feature-card__source" href={(() => {
+                    const m = f.source.match(/^(.+?):(\d+)$/);
+                    const fp = m ? m[1] : f.source;
+                    const ln = m ? m[2] : undefined;
+                    return `cursor://file/Users/illiafilipas/code/collection-claude-code-source-code/claude-code-source-code/${fp}${ln ? `:${ln}:1` : ''}`;
+                  })()} onClick={(e) => e.stopPropagation()} title="Open in Cursor" style={{ textDecoration: 'none', color: 'inherit' }}>{f.source}</a>
                 </div>
               )}
             </div>

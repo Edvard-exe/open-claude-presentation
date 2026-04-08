@@ -91,9 +91,18 @@ export function StoryTimeline({ steps, color, activeStep, onStepChange }: StoryT
               <span className="step-card__number">{activeStep + 1}</span>
               <span className="step-card__title">{steps[activeStep].title}</span>
             </div>
-            {steps[activeStep].source && (
-              <span className="step-card__source">{steps[activeStep].source}</span>
-            )}
+            {steps[activeStep].source && (() => {
+              const src = steps[activeStep].source!;
+              const m = src.match(/^(.+?):(\d+)$/);
+              const filePath = m ? m[1] : src;
+              const line = m ? m[2] : undefined;
+              const cursorHref = `cursor://file/Users/illiafilipas/code/collection-claude-code-source-code/claude-code-source-code/${filePath}${line ? `:${line}:1` : ''}`;
+              return (
+                <a className="step-card__source" href={cursorHref} onClick={(e) => e.stopPropagation()} title="Open in Cursor" style={{ textDecoration: 'none', color: 'inherit' }}>
+                  {src}
+                </a>
+              );
+            })()}
           </div>
           <div className="step-card__description">{steps[activeStep].description}</div>
           {steps[activeStep].content && (

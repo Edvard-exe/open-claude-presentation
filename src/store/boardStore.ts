@@ -575,24 +575,18 @@ export const useBoardStore = create<BoardState>((set) => ({
       ],
     },
   ],
-
-  // ═══════════════════════════════════════════════════════════════
-  //  CONNECTIONS — clear parent-child hierarchy
-  //  Index:  0       1       2       3       4       5       6       7       8       9
-  // ═══════════════════════════════════════════════════════════════
   connections: [
-    { from: MEMORY_ID,  to: PROMPT_ID,   label: 'CLAUDE.md + memory' },    // 0
-    { from: PROMPT_ID,  to: CORE_ID,     label: 'buildSystemPrompt()' },    // 1
-    { from: CORE_ID,    to: AGENT_ID,    label: 'AgentTool' },              // 2
-    { from: AGENT_ID,   to: MAILBOX_ID,  label: 'SendMessage' },           // 3  ← child of Agent
-    { from: AGENT_ID,   to: ADVISOR_ID,  label: 'advisor tool' },          // 4  ← child of Agent
-    { from: AGENT_ID,   to: AUTO_ID,     label: 'Kairos / auto-mode' },    // 5  ← child of Agent
-    { from: CORE_ID,    to: HOOKS_ID,    label: 'executeHooks' },          // 6
-    { from: CORE_ID,    to: CACHE_ID,    label: 'cache_control' },         // 7
-    { from: CORE_ID,    to: COMPACT_ID,  label: 'autoCompact' },           // 8
-    { from: CORE_ID,    to: SECURITY_ID, label: 'canUseTool()' },          // 9
+    { from: MEMORY_ID,  to: PROMPT_ID,   label: 'CLAUDE.md + memory' },
+    { from: PROMPT_ID,  to: CORE_ID,     label: 'buildSystemPrompt()' },
+    { from: CORE_ID,    to: AGENT_ID,    label: 'AgentTool' },
+    { from: AGENT_ID,   to: MAILBOX_ID,  label: 'SendMessage' },
+    { from: AGENT_ID,   to: ADVISOR_ID,  label: 'advisor tool' },
+    { from: AGENT_ID,   to: AUTO_ID,     label: 'Kairos / auto-mode' },
+    { from: CORE_ID,    to: HOOKS_ID,    label: 'executeHooks' },
+    { from: CORE_ID,    to: CACHE_ID,    label: 'cache_control' },
+    { from: CORE_ID,    to: COMPACT_ID,  label: 'autoCompact' },
+    { from: CORE_ID,    to: SECURITY_ID, label: 'canUseTool()' },
   ],
-
   selectedTileId: null,
   openDiagramId: null,
   openSubItemData: null,
@@ -603,7 +597,7 @@ export const useBoardStore = create<BoardState>((set) => ({
   presentationStepIndex: -1,
   presentationTransitioning: false,
   activeTileId: null,
-  activeConnectionIndex: null,
+  activeConnection: null,
 
   startPresentation: () => {
     set({ presentationActive: true });
@@ -615,7 +609,8 @@ export const useBoardStore = create<BoardState>((set) => ({
       presentationStepIndex: -1,
       presentationTransitioning: false,
       activeTileId: null,
-      activeConnectionIndex: null,
+      activeConnection: null,
+      connections: [],
     }),
   presentationNext: () => {
     const { presentationStepIndex, goToStep } = useBoardStore.getState();
@@ -643,11 +638,18 @@ export const useBoardStore = create<BoardState>((set) => ({
       const targetPanX = window.innerWidth / 2 - tileCenterX * targetZoom;
       const targetPanY = window.innerHeight / 2 - tileCenterY * targetZoom;
 
+      // Build up connections from all steps up to current
+      const visibleConnections = ANIMATION_STEPS
+        .slice(0, index + 1)
+        .map((s) => s.connection)
+        .filter((c): c is NonNullable<typeof c> => c !== null);
+
       return {
         presentationStepIndex: index,
         presentationTransitioning: true,
         activeTileId: step.tileId,
-        activeConnectionIndex: step.connectionIndex,
+        activeConnection: step.connection,
+        connections: visibleConnections,
         pan: { x: targetPanX, y: targetPanY },
         zoom: targetZoom,
       };

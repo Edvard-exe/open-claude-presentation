@@ -37,15 +37,18 @@ export function NeuralBackground({ width, height, color }: Props) {
     const g = parseInt(color.slice(3, 5), 16);
     const b = parseInt(color.slice(5, 7), 16);
 
-    // Create nodes
-    const nodeCount = 18;
+    // Constrain nodes to the white space between content text and the links section
+    const nodeCount = 12;
+    const bandTop = 170;  // below the content text
+    const bandBottom = Math.min(height - 10, 195); // well above /src/query.ts
+    const bandHeight = bandBottom - bandTop;
     if (nodesRef.current.length === 0) {
       nodesRef.current = Array.from({ length: nodeCount }, () => ({
         x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        radius: 2 + Math.random() * 2.5,
+        y: bandTop + Math.random() * bandHeight,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        radius: 1.5 + Math.random() * 2,
         pulsePhase: Math.random() * Math.PI * 2,
       }));
     }
@@ -56,17 +59,17 @@ export function NeuralBackground({ width, height, color }: Props) {
     function animate(time: number) {
       ctx!.clearRect(0, 0, width, height);
 
-      // Update positions
+      // Update positions — keep nodes below safe zone
       for (const node of nodes) {
         node.x += node.vx;
         node.y += node.vy;
 
-        // Bounce off edges with padding
+        // Bounce within the header-to-content band
         if (node.x < 10 || node.x > width - 10) node.vx *= -1;
-        if (node.y < 10 || node.y > height - 10) node.vy *= -1;
+        if (node.y < bandTop || node.y > bandBottom) node.vy *= -1;
 
         node.x = Math.max(10, Math.min(width - 10, node.x));
-        node.y = Math.max(10, Math.min(height - 10, node.y));
+        node.y = Math.max(bandTop, Math.min(bandBottom, node.y));
       }
 
       // Draw connections
@@ -77,7 +80,7 @@ export function NeuralBackground({ width, height, color }: Props) {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < connectionDistance) {
-            const alpha = (1 - dist / connectionDistance) * 0.25;
+            const alpha = (1 - dist / connectionDistance) * 0.15;
             // Pulsing signal along connections
             const pulse = Math.sin(time * 0.002 + nodes[i].pulsePhase) * 0.5 + 0.5;
             const finalAlpha = alpha * (0.5 + pulse * 0.5);
@@ -111,13 +114,13 @@ export function NeuralBackground({ width, height, color }: Props) {
         // Glow
         ctx!.beginPath();
         ctx!.arc(node.x, node.y, currentRadius * 3, 0, Math.PI * 2);
-        ctx!.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.04 + pulse * 0.04})`;
+        ctx!.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.03 + pulse * 0.03})`;
         ctx!.fill();
 
         // Core
         ctx!.beginPath();
         ctx!.arc(node.x, node.y, currentRadius, 0, Math.PI * 2);
-        ctx!.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.3 + pulse * 0.3})`;
+        ctx!.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.2 + pulse * 0.2})`;
         ctx!.fill();
       }
 

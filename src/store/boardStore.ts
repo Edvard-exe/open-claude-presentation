@@ -4,6 +4,7 @@ import type { BoardState, Position, TileData } from '../types/board';
 
 const CORE_ID = 'tile-core-architecture';
 const AGENT_ID = 'tile-agent-system';
+const CACHE_ID = 'tile-caching';
 
 export const useBoardStore = create<BoardState>((set) => ({
   pan: { x: 0, y: 0 },
@@ -56,9 +57,51 @@ export const useBoardStore = create<BoardState>((set) => ({
         },
       ],
     },
+    {
+      id: CACHE_ID,
+      position: { x: 200, y: 520 },
+      width: 360,
+      height: 480,
+      title: 'Prompt Caching',
+      content: 'Ephemeral KV-cache breakpoints on the Anthropic API — cache system prompts, tool schemas, and conversation prefixes to avoid re-processing thousands of tokens every turn.',
+      filePath: '/src/services/api/claude.ts',
+      color: '#059669',
+      animated: true,
+      subItems: [
+        {
+          label: 'Cache Breakpoints',
+          description: 'One cache_control marker per request on the last message — everything before it becomes a reusable KV-cache prefix with 5 min or 1 h TTL',
+          color: '#10B981',
+          filePath: '/Users/edvardsivickij/Documents/claude code/src/services/api/claude.ts',
+          line: 3063,
+        },
+        {
+          label: 'Microcompact (cache_edits)',
+          description: 'Surgically deletes old tool results from the cached prefix via cache_edits without invalidating it — messages stay intact locally, only the server-side cache shrinks',
+          color: '#F59E0B',
+          filePath: '/Users/edvardsivickij/Documents/claude code/src/services/compact/microCompact.ts',
+          line: 305,
+        },
+        {
+          label: 'Time-Based Microcompact',
+          description: 'Fallback path: when the 1 h TTL has expired, mutates message content directly — replaces old tool results with "[Old tool result content cleared]", intentionally busting the cold cache to shrink the prompt',
+          color: '#EF4444',
+          filePath: '/Users/edvardsivickij/Documents/claude code/src/services/compact/microCompact.ts',
+          line: 401,
+        },
+        {
+          label: 'Cache Break Detection',
+          description: 'Two-phase tracker: hashes system prompt, tool schemas, TTL, scope, and betas before each call, then compares cache_read_input_tokens after — flags unexpected drops above 2 000 tokens',
+          color: '#6366F1',
+          filePath: '/Users/edvardsivickij/Documents/claude code/src/services/api/promptCacheBreakDetection.ts',
+          line: 247,
+        },
+      ],
+    },
   ],
   connections: [
     { from: CORE_ID, to: AGENT_ID, label: 'AgentTool' },
+    { from: CORE_ID, to: CACHE_ID, label: 'cache_control' },
   ],
   selectedTileId: null,
   openDiagramId: null,

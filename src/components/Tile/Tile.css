@@ -1,0 +1,195 @@
+.tile {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  cursor: grab;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.tile:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+.tile--selected {
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--tile-accent) 25%, transparent),
+    0 0 0 2px var(--tile-accent);
+}
+
+.tile:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+/* Animated tile styles */
+.tile--animated {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.97) 0%,
+    rgba(255, 255, 255, 0.92) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--tile-accent) 20%, transparent);
+}
+
+.tile--animated:hover {
+  box-shadow:
+    0 8px 32px color-mix(in srgb, var(--tile-accent) 20%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--tile-accent) 30%, transparent),
+    0 0 60px color-mix(in srgb, var(--tile-accent) 8%, transparent);
+}
+
+.tile--animated::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 12px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tile-accent) 40%, transparent),
+    transparent 50%,
+    color-mix(in srgb, var(--tile-accent) 20%, transparent)
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+  animation: borderRotate 6s linear infinite;
+}
+
+@keyframes borderRotate {
+  0% {
+    background: linear-gradient(0deg,
+      color-mix(in srgb, var(--tile-accent) 40%, transparent),
+      transparent 50%,
+      color-mix(in srgb, var(--tile-accent) 20%, transparent));
+  }
+  25% {
+    background: linear-gradient(90deg,
+      color-mix(in srgb, var(--tile-accent) 40%, transparent),
+      transparent 50%,
+      color-mix(in srgb, var(--tile-accent) 20%, transparent));
+  }
+  50% {
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--tile-accent) 40%, transparent),
+      transparent 50%,
+      color-mix(in srgb, var(--tile-accent) 20%, transparent));
+  }
+  75% {
+    background: linear-gradient(270deg,
+      color-mix(in srgb, var(--tile-accent) 40%, transparent),
+      transparent 50%,
+      color-mix(in srgb, var(--tile-accent) 20%, transparent));
+  }
+  100% {
+    background: linear-gradient(360deg,
+      color-mix(in srgb, var(--tile-accent) 40%, transparent),
+      transparent 50%,
+      color-mix(in srgb, var(--tile-accent) 20%, transparent));
+  }
+}
+
+.tile__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tile__header {
+  padding: 16px 20px 12px;
+  border-bottom: 2px solid var(--tile-accent);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tile__pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tile-accent);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.tile__pulse::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--tile-accent);
+  opacity: 0;
+  animation: pulseRing 2s ease-out infinite;
+}
+
+.tile__pulse::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid var(--tile-accent);
+  opacity: 0;
+  animation: pulseRing 2s ease-out 0.5s infinite;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.tile__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.tile__content {
+  padding: 12px 20px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #555;
+  flex: 1;
+  overflow: hidden;
+}
+
+.tile__path {
+  padding: 8px 20px;
+  font-size: 11px;
+  font-family: 'SF Mono', 'Menlo', 'Fira Code', monospace;
+  color: var(--tile-accent);
+  background: color-mix(in srgb, var(--tile-accent) 5%, white);
+  border-top: 1px solid color-mix(in srgb, var(--tile-accent) 10%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tile__cta {
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tile-accent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: gap 0.2s ease;
+}
+
+.tile:hover .tile__cta {
+  gap: 8px;
+}

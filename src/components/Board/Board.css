@@ -1,0 +1,19 @@
+.board {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: #fafafa;
+  background-image: radial-gradient(circle, #d0d0d0 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  background-position: var(--pan-x) var(--pan-y);
+  touch-action: none;
+  user-select: none;
+}
+
+.board__world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}

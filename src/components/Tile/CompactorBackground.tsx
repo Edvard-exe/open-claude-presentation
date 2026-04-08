@@ -82,7 +82,7 @@ export function CompactorBackground({ width, height, color }: Props) {
       }
     }
 
-    function animate(time: number) {
+    function animate(_time: number) {
       ctx!.clearRect(0, 0, width, height);
 
       const sweep = sweepRef.current;

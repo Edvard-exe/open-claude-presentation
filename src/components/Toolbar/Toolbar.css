@@ -68,3 +68,12 @@
   background: #e4e4e4;
   margin: 0 4px;
 }
+
+.toolbar__btn--play {
+  color: #7C3AED;
+}
+
+.toolbar__btn--play:hover {
+  background: #F3F0FF;
+  color: #6D28D9;
+}

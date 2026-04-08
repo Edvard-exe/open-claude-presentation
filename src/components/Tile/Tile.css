@@ -291,3 +291,25 @@
 .tile:hover .tile__cta {
   gap: 8px;
 }
+
+/* Presentation mode active tile */
+.tile--presenting {
+  box-shadow:
+    0 0 0 3px var(--tile-accent),
+    0 0 40px color-mix(in srgb, var(--tile-accent) 30%, transparent),
+    0 0 80px color-mix(in srgb, var(--tile-accent) 15%, transparent);
+  transform: translateY(-4px);
+  z-index: 10;
+}
+
+.tile--presenting .tile__pulse {
+  animation: pulseRing 1s ease-out infinite;
+}
+
+.tile--presenting .tile__pulse::before {
+  animation: pulseRing 1s ease-out infinite;
+}
+
+.tile--presenting .tile__pulse::after {
+  animation: pulseRing 1s ease-out 0.3s infinite;
+}

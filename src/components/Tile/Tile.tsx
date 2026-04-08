@@ -17,9 +17,11 @@ interface TileProps {
 
 export function Tile({ tile }: TileProps) {
   const selectedTileId = useBoardStore((s) => s.selectedTileId);
+  const activeTileId = useBoardStore((s) => s.activeTileId);
   const openDiagram = useBoardStore((s) => s.openDiagram);
   const openSubItem = useBoardStore((s) => s.openSubItem);
   const isSelected = selectedTileId === tile.id;
+  const isPresenting = activeTileId === tile.id;
   const dragHandlers = useTileDrag(tile.id);
   const pointerDownPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -53,7 +55,7 @@ export function Tile({ tile }: TileProps) {
 
   return (
     <div
-      className={`tile ${isSelected ? 'tile--selected' : ''} ${tile.animated ? 'tile--animated' : ''}`}
+      className={`tile ${isSelected ? 'tile--selected' : ''} ${tile.animated ? 'tile--animated' : ''} ${isPresenting ? 'tile--presenting' : ''}`}
       style={{
         left: tile.position.x,
         top: tile.position.y,

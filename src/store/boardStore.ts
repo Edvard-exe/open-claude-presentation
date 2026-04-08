@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { BoardState, Position, TileData } from '../types/board';
+import { ANIMATION_STEPS } from '../data/animationSteps';
 
 const CORE_ID = 'tile-core-architecture';
 const AGENT_ID = 'tile-agent-system';
@@ -262,6 +263,62 @@ export const useBoardStore = create<BoardState>((set) => ({
   selectedTileId: null,
   openDiagramId: null,
   openSubItemData: null,
+
+  // Presentation playback
+  presentationActive: false,
+  presentationStepIndex: -1,
+  presentationTransitioning: false,
+  activeTileId: null,
+  activeConnectionIndex: null,
+
+  startPresentation: () => {
+    set({ presentationActive: true });
+    useBoardStore.getState().goToStep(0);
+  },
+  stopPresentation: () =>
+    set({
+      presentationActive: false,
+      presentationStepIndex: -1,
+      presentationTransitioning: false,
+      activeTileId: null,
+      activeConnectionIndex: null,
+    }),
+  presentationNext: () => {
+    const { presentationStepIndex, goToStep } = useBoardStore.getState();
+    if (presentationStepIndex < ANIMATION_STEPS.length - 1) {
+      goToStep(presentationStepIndex + 1);
+    }
+  },
+  presentationPrev: () => {
+    const { presentationStepIndex, goToStep } = useBoardStore.getState();
+    if (presentationStepIndex > 0) {
+      goToStep(presentationStepIndex - 1);
+    }
+  },
+  goToStep: (index: number) =>
+    set((state) => {
+      const step = ANIMATION_STEPS[index];
+      if (!step) return state;
+
+      const tile = state.tiles.find((t) => t.id === step.tileId);
+      if (!tile) return state;
+
+      const targetZoom = 0.85;
+      const tileCenterX = tile.position.x + tile.width / 2;
+      const tileCenterY = tile.position.y + tile.height / 2;
+      const targetPanX = window.innerWidth / 2 - tileCenterX * targetZoom;
+      const targetPanY = window.innerHeight / 2 - tileCenterY * targetZoom;
+
+      return {
+        presentationStepIndex: index,
+        presentationTransitioning: true,
+        activeTileId: step.tileId,
+        activeConnectionIndex: step.connectionIndex,
+        pan: { x: targetPanX, y: targetPanY },
+        zoom: targetZoom,
+      };
+    }),
+  setPresentationTransitioning: (v: boolean) => set({ presentationTransitioning: v }),
 
   setPan: (pan: Position) => set({ pan }),
   setZoom: (zoom: number) => set({ zoom: Math.min(Math.max(zoom, 0.1), 5) }),

@@ -6,13 +6,14 @@ export function Toolbar() {
   const setZoom = useBoardStore((s) => s.setZoom);
   const addTile = useBoardStore((s) => s.addTile);
   const pan = useBoardStore((s) => s.pan);
+  const presentationActive = useBoardStore((s) => s.presentationActive);
+  const startPresentation = useBoardStore((s) => s.startPresentation);
 
   const handleZoomIn = () => setZoom(zoom * 1.2);
   const handleZoomOut = () => setZoom(zoom / 1.2);
   const handleResetView = () => useBoardStore.setState({ zoom: 1, pan: { x: 0, y: 0 } });
 
   const handleAddTile = () => {
-    // Place new tile near the center of the viewport
     const centerX = (window.innerWidth / 2 - pan.x) / zoom;
     const centerY = (window.innerHeight / 2 - pan.y) / zoom;
 
@@ -24,6 +25,8 @@ export function Toolbar() {
       content: 'Double-click to edit (coming soon)',
     });
   };
+
+  if (presentationActive) return null;
 
   return (
     <div className="toolbar">
@@ -45,6 +48,12 @@ export function Toolbar() {
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
           <path d="M5.5 8h5M8 5.5v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </button>
+      <div className="toolbar__divider" />
+      <button className="toolbar__btn toolbar__btn--play" onClick={startPresentation} title="Start presentation (P)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M4 2.5v11l9-5.5L4 2.5z" fill="currentColor" />
         </svg>
       </button>
     </div>

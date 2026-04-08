@@ -2,6 +2,10 @@
   animation: dashFlow 1.5s linear infinite;
 }
 
+.connection__line--static {
+  animation: none;
+}
+
 @keyframes dashFlow {
   to {
     stroke-dashoffset: -20;
@@ -10,4 +14,21 @@
 
 .connection__glow {
   filter: blur(2px);
+}
+
+/* Presentation mode: dim inactive connections */
+.connection__group--dimmed {
+  opacity: 0.15;
+  transition: opacity 0.5s ease;
+}
+
+.connection__group--active {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.connection__line--active {
+  animation: dashFlow 0.8s linear infinite;
+  stroke: #A78BFA !important;
+  filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.4));
 }

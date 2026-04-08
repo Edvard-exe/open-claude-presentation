@@ -4,6 +4,8 @@ import './Connections.css';
 export function Connections() {
   const tiles = useBoardStore((s) => s.tiles);
   const connections = useBoardStore((s) => s.connections);
+  const presentationActive = useBoardStore((s) => s.presentationActive);
+  const activeConnectionIndex = useBoardStore((s) => s.activeConnectionIndex);
 
   const tileMap = new Map(tiles.map((t) => [t.id, t]));
 
@@ -26,6 +28,9 @@ export function Connections() {
         const to = tileMap.get(conn.to);
         if (!from || !to) return null;
 
+        const isActive = presentationActive && i === activeConnectionIndex;
+        const isDimmed = presentationActive && i !== activeConnectionIndex;
+
         // Calculate edge connection points (right edge of from → left edge of to)
         const fromX = from.position.x + from.width;
         const fromY = from.position.y + from.height / 2;
@@ -41,14 +46,14 @@ export function Connections() {
         const labelY = (fromY + toY) / 2 - 12;
 
         return (
-          <g key={i}>
+          <g key={i} className={isActive ? 'connection__group--active' : isDimmed ? 'connection__group--dimmed' : ''}>
             {/* Glow line */}
             <path
               d={path}
               fill="none"
               stroke="#8B5CF6"
-              strokeWidth="4"
-              opacity="0.1"
+              strokeWidth={isActive ? 8 : 4}
+              opacity={isActive ? 0.25 : 0.1}
               className="connection__glow"
             />
             {/* Main line */}
@@ -56,15 +61,17 @@ export function Connections() {
               d={path}
               fill="none"
               stroke="#8B5CF6"
-              strokeWidth="2"
+              strokeWidth={isActive ? 3 : 2}
               strokeDasharray="6 4"
               markerEnd="url(#arrowhead)"
-              className="connection__line"
+              className={`connection__line ${isActive ? 'connection__line--active' : ''} ${!presentationActive ? 'connection__line--static' : ''}`}
             />
-            {/* Traveling dot */}
-            <circle r="3" fill="#8B5CF6" opacity="0.6" className="connection__dot">
-              <animateMotion dur="3s" repeatCount="indefinite" path={path} />
-            </circle>
+            {/* Traveling dot — only shown on the active connection during presentation */}
+            {isActive && (
+              <circle r={5} fill="#8B5CF6" opacity={0.9} className="connection__dot">
+                <animateMotion dur="1.5s" repeatCount="indefinite" path={path} />
+              </circle>
+            )}
             {/* Label */}
             {conn.label && (
               <g transform={`translate(${labelX}, ${labelY})`}>
@@ -75,8 +82,8 @@ export function Connections() {
                   height="20"
                   rx="4"
                   fill="white"
-                  stroke="#DDD6FE"
-                  strokeWidth="1"
+                  stroke={isActive ? '#A78BFA' : '#DDD6FE'}
+                  strokeWidth={isActive ? 2 : 1}
                 />
                 <text
                   textAnchor="middle"

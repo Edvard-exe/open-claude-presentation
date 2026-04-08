@@ -17,3 +17,7 @@
   transform-origin: 0 0;
   will-change: transform;
 }
+
+.board__world--transitioning {
+  transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}

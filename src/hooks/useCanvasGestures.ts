@@ -8,8 +8,10 @@ export function useCanvasGestures(containerRef: React.RefObject<HTMLDivElement |
 
   const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
+    const s = useBoardStore.getState();
+    if (s.presentationActive) return;
 
-    const { pan, zoom, setPan, setZoom } = useBoardStore.getState();
+    const { pan, zoom, setPan, setZoom } = s;
 
     // Zoom toward cursor
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -31,6 +33,7 @@ export function useCanvasGestures(containerRef: React.RefObject<HTMLDivElement |
   }, []);
 
   const handlePointerDown = useCallback((e: PointerEvent) => {
+    if (useBoardStore.getState().presentationActive) return;
     // Middle button or Space+left button
     if (e.button === 1 || (e.button === 0 && spaceHeld.current)) {
       e.preventDefault();
@@ -59,6 +62,38 @@ export function useCanvasGestures(containerRef: React.RefObject<HTMLDivElement |
   }, []);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    const state = useBoardStore.getState();
+
+    // Presentation keyboard shortcuts
+    if (state.presentationActive) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        state.stopPresentation();
+        return;
+      }
+      if (e.key === 'ArrowRight' || (e.code === 'Space' && !e.repeat)) {
+        e.preventDefault();
+        state.presentationNext();
+        return;
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        state.presentationPrev();
+        return;
+      }
+    }
+
+    // Toggle presentation with 'p'
+    if (e.key === 'p' && !e.repeat && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault();
+      if (state.presentationActive) {
+        state.stopPresentation();
+      } else {
+        state.startPresentation();
+      }
+      return;
+    }
+
     if (e.code === 'Space' && !e.repeat) {
       spaceHeld.current = true;
       if (containerRef.current) {
@@ -66,7 +101,7 @@ export function useCanvasGestures(containerRef: React.RefObject<HTMLDivElement |
       }
     }
 
-    const { zoom, setZoom, selectedTileId, removeTile } = useBoardStore.getState();
+    const { zoom, setZoom, selectedTileId, removeTile } = state;
 
     if (e.key === '=' || e.key === '+') {
       e.preventDefault();

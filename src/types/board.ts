@@ -3,6 +3,14 @@ export interface Position {
   y: number;
 }
 
+export interface AnimationStep {
+  tileId: string;
+  connectionIndex: number | null;
+  label: string;
+  codeRef: string;
+  description: string;
+}
+
 export interface TileSubItem {
   label: string;
   description?: string;
@@ -53,4 +61,18 @@ export interface BoardState {
   closeDiagram: () => void;
   openSubItem: (item: TileSubItem) => void;
   closeSubItem: () => void;
+
+  // Presentation playback
+  presentationActive: boolean;
+  presentationStepIndex: number;
+  presentationTransitioning: boolean;
+  activeTileId: string | null;
+  activeConnectionIndex: number | null;
+
+  startPresentation: () => void;
+  stopPresentation: () => void;
+  presentationNext: () => void;
+  presentationPrev: () => void;
+  goToStep: (index: number) => void;
+  setPresentationTransitioning: (v: boolean) => void;
 }

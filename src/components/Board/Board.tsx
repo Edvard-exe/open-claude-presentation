@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useBoardStore } from '../../store/boardStore';
 import { useCanvasGestures } from '../../hooks/useCanvasGestures';
 import { Tile } from '../Tile/Tile';
@@ -11,11 +11,26 @@ export function Board() {
   const zoom = useBoardStore((s) => s.zoom);
   const tiles = useBoardStore((s) => s.tiles);
   const selectTile = useBoardStore((s) => s.selectTile);
+  const presentationTransitioning = useBoardStore((s) => s.presentationTransitioning);
+  const setPresentationTransitioning = useBoardStore((s) => s.setPresentationTransitioning);
 
   useCanvasGestures(containerRef);
 
+  // Fallback timeout: if CSS transition doesn't fire (same position), clear flag
+  useEffect(() => {
+    if (!presentationTransitioning) return;
+    const id = setTimeout(() => setPresentationTransitioning(false), 900);
+    return () => clearTimeout(id);
+  }, [presentationTransitioning, setPresentationTransitioning]);
+
   const handleBoardClick = () => {
     selectTile(null);
+  };
+
+  const handleTransitionEnd = () => {
+    if (presentationTransitioning) {
+      setPresentationTransitioning(false);
+    }
   };
 
   return (
@@ -31,10 +46,11 @@ export function Board() {
       } as React.CSSProperties}
     >
       <div
-        className="board__world"
+        className={`board__world ${presentationTransitioning ? 'board__world--transitioning' : ''}`}
         style={{
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
         }}
+        onTransitionEnd={handleTransitionEnd}
       >
         <Connections />
         {tiles.map((tile) => (

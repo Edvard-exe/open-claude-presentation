@@ -20,6 +20,7 @@ export function Tile({ tile }: TileProps) {
   const activeTileId = useBoardStore((s) => s.activeTileId);
   const openDiagram = useBoardStore((s) => s.openDiagram);
   const openSubItem = useBoardStore((s) => s.openSubItem);
+  const diveTile = useBoardStore((s) => s.diveTile);
   const isSelected = selectedTileId === tile.id;
   const isPresenting = activeTileId === tile.id;
   const dragHandlers = useTileDrag(tile.id);
@@ -37,16 +38,21 @@ export function Tile({ tile }: TileProps) {
     (e: React.PointerEvent) => {
       dragHandlers.onPointerUp(e);
 
-      if (tile.diagramId && pointerDownPos.current) {
+      if (pointerDownPos.current) {
         const dx = Math.abs(e.clientX - pointerDownPos.current.x);
         const dy = Math.abs(e.clientY - pointerDownPos.current.y);
         if (dx < 5 && dy < 5) {
-          openDiagram(tile.diagramId);
+          // Click (not drag) — dive into story if available, otherwise open diagram
+          if (tile.storySteps?.length) {
+            diveTile(tile.id);
+          } else if (tile.diagramId) {
+            openDiagram(tile.diagramId);
+          }
         }
       }
       pointerDownPos.current = null;
     },
-    [dragHandlers, tile.diagramId, openDiagram]
+    [dragHandlers, tile.diagramId, tile.storySteps, tile.id, openDiagram, diveTile]
   );
 
   const accentColor = tile.color || '#4A90D9';

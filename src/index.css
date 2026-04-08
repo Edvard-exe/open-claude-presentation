@@ -9,10 +9,6 @@
 html, body, #root {
   width: 100%;
   height: 100%;
-}
-
-/* Board mode needs overflow:hidden, story mode needs scroll */
-body.board-mode {
   overflow: hidden;
 }
 

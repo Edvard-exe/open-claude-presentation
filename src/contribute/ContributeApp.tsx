@@ -11,7 +11,7 @@ function useContributeSocket() {
   const wsRef = useRef<WebSocket | null>(null);
   const [tiles, setTiles] = useState<TileInfo[]>([]);
   const [connected, setConnected] = useState(false);
-  const reconnectTimer = useRef<ReturnType<typeof setTimeout>>();
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const attempt = useRef(0);
 
   const connect = useCallback(() => {

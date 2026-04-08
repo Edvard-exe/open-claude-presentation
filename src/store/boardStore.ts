@@ -610,7 +610,6 @@ export const useBoardStore = create<BoardState>((set) => ({
       presentationTransitioning: false,
       activeTileId: null,
       activeConnection: null,
-      connections: [],
     }),
   presentationNext: () => {
     const { presentationStepIndex, goToStep } = useBoardStore.getState();
@@ -679,5 +678,13 @@ export const useBoardStore = create<BoardState>((set) => ({
   openSubItem: (item) => set({ openSubItemData: item }),
   closeSubItem: () => set({ openSubItemData: null }),
   diveTile: (id: string) => set({ divedTileId: id }),
-  undive: () => set({ divedTileId: null }),
+  undive: () => {
+    // Clear dive but preserve presentation state — user returns to where they were
+    const { presentationActive, presentationStepIndex } = useBoardStore.getState();
+    set({ divedTileId: null });
+    // Re-navigate to current step to restore pan/zoom position
+    if (presentationActive && presentationStepIndex >= 0) {
+      useBoardStore.getState().goToStep(presentationStepIndex);
+    }
+  },
 }));

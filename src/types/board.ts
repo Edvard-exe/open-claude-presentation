@@ -23,7 +23,7 @@ export interface TileData {
   url?: string;
   diagramId?: string;
   animated?: boolean;
-  backgroundType?: 'neural' | 'orbital' | 'cache';
+  backgroundType?: 'neural' | 'orbital' | 'cache' | 'shield' | 'mailbox' | 'hooks' | 'compactor';
   subItems?: TileSubItem[];
 }
 

@@ -4,6 +4,10 @@ import { useTileDrag } from '../../hooks/useTileDrag';
 import { NeuralBackground } from './NeuralBackground';
 import { OrbitalBackground } from './OrbitalBackground';
 import { CacheBackground } from './CacheBackground';
+import { ShieldBackground } from './ShieldBackground';
+import { MailboxBackground } from './MailboxBackground';
+import { HooksBackground } from './HooksBackground';
+import { CompactorBackground } from './CompactorBackground';
 import type { TileData } from '../../types/board';
 import './Tile.css';
 
@@ -61,13 +65,18 @@ export function Tile({ tile }: TileProps) {
       onPointerMove={dragHandlers.onPointerMove}
       onPointerUp={handlePointerUp}
     >
-      {tile.animated && (
-        bgType === 'cache'
-          ? <CacheBackground width={tile.width} height={tile.height} color={accentColor} />
-          : bgType === 'orbital'
-            ? <OrbitalBackground width={tile.width} height={tile.height} color={accentColor} />
-            : <NeuralBackground width={tile.width} height={tile.height} color={accentColor} />
-      )}
+      {tile.animated && (() => {
+        const bgProps = { width: tile.width, height: tile.height, color: accentColor };
+        switch (bgType) {
+          case 'shield': return <ShieldBackground {...bgProps} />;
+          case 'cache': return <CacheBackground {...bgProps} />;
+          case 'orbital': return <OrbitalBackground {...bgProps} />;
+          case 'mailbox': return <MailboxBackground {...bgProps} />;
+          case 'hooks': return <HooksBackground {...bgProps} />;
+          case 'compactor': return <CompactorBackground {...bgProps} />;
+          default: return <NeuralBackground {...bgProps} />;
+        }
+      })()}
       <div className="tile__body">
         <div className="tile__header">
           {tile.animated && <div className="tile__pulse" />}

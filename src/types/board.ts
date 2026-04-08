@@ -5,7 +5,7 @@ export interface Position {
 
 export interface AnimationStep {
   tileId: string;
-  connectionIndex: number | null;
+  connection: Connection | null;
   label: string;
   codeRef: string;
   description: string;
@@ -67,7 +67,7 @@ export interface BoardState {
   presentationStepIndex: number;
   presentationTransitioning: boolean;
   activeTileId: string | null;
-  activeConnectionIndex: number | null;
+  activeConnection: Connection | null;
 
   startPresentation: () => void;
   stopPresentation: () => void;

@@ -252,14 +252,7 @@ export const useBoardStore = create<BoardState>((set) => ({
       ],
     },
   ],
-  connections: [
-    { from: CORE_ID, to: AGENT_ID, label: 'AgentTool' },
-    { from: CORE_ID, to: CACHE_ID, label: 'cache_control' },
-    { from: CORE_ID, to: AUTO_ID, label: 'hasToolPermission' },
-    { from: AGENT_ID, to: MAILBOX_ID, label: 'SendMessage' },
-    { from: CORE_ID, to: HOOKS_ID, label: 'executeHooks' },
-    { from: CORE_ID, to: COMPACT_ID, label: 'autoCompact' },
-  ],
+  connections: [],
   selectedTileId: null,
   openDiagramId: null,
   openSubItemData: null,
@@ -269,7 +262,7 @@ export const useBoardStore = create<BoardState>((set) => ({
   presentationStepIndex: -1,
   presentationTransitioning: false,
   activeTileId: null,
-  activeConnectionIndex: null,
+  activeConnection: null,
 
   startPresentation: () => {
     set({ presentationActive: true });
@@ -281,7 +274,8 @@ export const useBoardStore = create<BoardState>((set) => ({
       presentationStepIndex: -1,
       presentationTransitioning: false,
       activeTileId: null,
-      activeConnectionIndex: null,
+      activeConnection: null,
+      connections: [],
     }),
   presentationNext: () => {
     const { presentationStepIndex, goToStep } = useBoardStore.getState();
@@ -309,11 +303,18 @@ export const useBoardStore = create<BoardState>((set) => ({
       const targetPanX = window.innerWidth / 2 - tileCenterX * targetZoom;
       const targetPanY = window.innerHeight / 2 - tileCenterY * targetZoom;
 
+      // Build up connections from all steps up to current
+      const visibleConnections = ANIMATION_STEPS
+        .slice(0, index + 1)
+        .map((s) => s.connection)
+        .filter((c): c is NonNullable<typeof c> => c !== null);
+
       return {
         presentationStepIndex: index,
         presentationTransitioning: true,
         activeTileId: step.tileId,
-        activeConnectionIndex: step.connectionIndex,
+        activeConnection: step.connection,
+        connections: visibleConnections,
         pan: { x: targetPanX, y: targetPanY },
         zoom: targetZoom,
       };

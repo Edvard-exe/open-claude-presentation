@@ -5,7 +5,7 @@ export function Connections() {
   const tiles = useBoardStore((s) => s.tiles);
   const connections = useBoardStore((s) => s.connections);
   const presentationActive = useBoardStore((s) => s.presentationActive);
-  const activeConnectionIndex = useBoardStore((s) => s.activeConnectionIndex);
+  const activeConnection = useBoardStore((s) => s.activeConnection);
 
   const tileMap = new Map(tiles.map((t) => [t.id, t]));
 
@@ -28,25 +28,70 @@ export function Connections() {
         const to = tileMap.get(conn.to);
         if (!from || !to) return null;
 
-        const isActive = presentationActive && i === activeConnectionIndex;
-        const isDimmed = presentationActive && i !== activeConnectionIndex;
+        const isActive = presentationActive &&
+          activeConnection !== null &&
+          conn.from === activeConnection.from &&
+          conn.to === activeConnection.to;
+        const isDimmed = presentationActive && !isActive;
 
-        // Calculate edge connection points (right edge of from → left edge of to)
-        const fromX = from.position.x + from.width;
-        const fromY = from.position.y + from.height / 2;
-        const toX = to.position.x;
-        const toY = to.position.y + to.height / 2;
+        // Calculate edge midpoints
+        const fromCX = from.position.x + from.width / 2;
+        const fromCY = from.position.y + from.height / 2;
+        const toCX = to.position.x + to.width / 2;
+        const toCY = to.position.y + to.height / 2;
+
+        // Direction vector
+        const dx = toCX - fromCX;
+        const dy = toCY - fromCY;
+
+        // Pick exit/entry edges based on direction
+        let fromX: number, fromY: number, toX: number, toY: number;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          // Horizontal-dominant: use left/right edges
+          if (dx > 0) {
+            fromX = from.position.x + from.width;
+            fromY = from.position.y + from.height / 2;
+            toX = to.position.x;
+            toY = to.position.y + to.height / 2;
+          } else {
+            fromX = from.position.x;
+            fromY = from.position.y + from.height / 2;
+            toX = to.position.x + to.width;
+            toY = to.position.y + to.height / 2;
+          }
+        } else {
+          // Vertical-dominant: use top/bottom edges
+          if (dy > 0) {
+            fromX = from.position.x + from.width / 2;
+            fromY = from.position.y + from.height;
+            toX = to.position.x + to.width / 2;
+            toY = to.position.y;
+          } else {
+            fromX = from.position.x + from.width / 2;
+            fromY = from.position.y;
+            toX = to.position.x + to.width / 2;
+            toY = to.position.y + to.height;
+          }
+        }
 
         // Bezier curve control points
         const midX = (fromX + toX) / 2;
-        const path = `M ${fromX} ${fromY} C ${midX} ${fromY}, ${midX} ${toY}, ${toX} ${toY}`;
+        const midY = (fromY + toY) / 2;
+        let path: string;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          path = `M ${fromX} ${fromY} C ${midX} ${fromY}, ${midX} ${toY}, ${toX} ${toY}`;
+        } else {
+          path = `M ${fromX} ${fromY} C ${fromX} ${midY}, ${toX} ${midY}, ${toX} ${toY}`;
+        }
 
         // Label position
         const labelX = midX;
-        const labelY = (fromY + toY) / 2 - 12;
+        const labelY = midY - 12;
 
         return (
-          <g key={i} className={isActive ? 'connection__group--active' : isDimmed ? 'connection__group--dimmed' : ''}>
+          <g key={`${conn.from}-${conn.to}-${i}`} className={isActive ? 'connection__group--active' : isDimmed ? 'connection__group--dimmed' : ''}>
             {/* Glow line */}
             <path
               d={path}
@@ -69,7 +114,7 @@ export function Connections() {
             {/* Traveling dot — only shown on the active connection during presentation */}
             {isActive && (
               <circle r={5} fill="#8B5CF6" opacity={0.9} className="connection__dot">
-                <animateMotion dur="1.5s" repeatCount="indefinite" path={path} />
+                <animateMotion dur="3.5s" repeatCount="indefinite" path={path} />
               </circle>
             )}
             {/* Label */}

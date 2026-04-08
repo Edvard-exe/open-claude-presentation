@@ -9,6 +9,10 @@
 html, body, #root {
   width: 100%;
   height: 100%;
+}
+
+/* Board mode needs overflow:hidden, story mode needs scroll */
+body.board-mode {
   overflow: hidden;
 }
 
@@ -16,6 +20,6 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #fafafa;
-  color: #1a1a1a;
+  background: #0a0a0f;
+  color: #e0e0f0;
 }

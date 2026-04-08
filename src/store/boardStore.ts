@@ -321,6 +321,11 @@ export const useBoardStore = create<BoardState>((set) => ({
     }),
   setPresentationTransitioning: (v: boolean) => set({ presentationTransitioning: v }),
 
+  // QR overlay
+  showQR: false,
+  toggleQR: () => set((state) => ({ showQR: !state.showQR })),
+  closeQR: () => set({ showQR: false }),
+
   setPan: (pan: Position) => set({ pan }),
   setZoom: (zoom: number) => set({ zoom: Math.min(Math.max(zoom, 0.1), 5) }),
   addTile: (tile: Omit<TileData, 'id'>) =>

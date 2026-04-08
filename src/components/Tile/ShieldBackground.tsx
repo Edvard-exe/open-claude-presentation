@@ -51,11 +51,11 @@ export function ShieldBackground({ width, height, color }: Props) {
       particles.push({
         angle,
         radius: shieldRadius + 40 + Math.random() * 30,
-        speed: 0.3 + Math.random() * 0.4,
+        speed: 0.15 + Math.random() * 0.2,
         size: 2 + Math.random() * 2,
         allowed,
         life: 0,
-        maxLife: 120 + Math.random() * 80,
+        maxLife: 200 + Math.random() * 120,
         fadeIn: 0,
       });
     }
@@ -66,7 +66,7 @@ export function ShieldBackground({ width, height, color }: Props) {
         const p: Particle = {
           angle: Math.random() * Math.PI * 2,
           radius: shieldRadius + Math.random() * 40,
-          speed: 0.3 + Math.random() * 0.4,
+          speed: 0.15 + Math.random() * 0.2,
           size: 2 + Math.random() * 2,
           allowed: Math.random() > 0.25,
           life: Math.random() * 100,
@@ -78,10 +78,10 @@ export function ShieldBackground({ width, height, color }: Props) {
     }
 
     function drawShield(time: number) {
-      const pulse = Math.sin(time * 0.002) * 0.15 + 0.85;
+      const pulse = Math.sin(time * 0.001) * 0.15 + 0.85;
 
       // Outer scanning ring
-      const scanAngle = (time * 0.001) % (Math.PI * 2);
+      const scanAngle = (time * 0.0005) % (Math.PI * 2);
       ctx!.beginPath();
       ctx!.arc(cx, cy, shieldRadius + 8, scanAngle, scanAngle + Math.PI * 0.4);
       ctx!.strokeStyle = `rgba(${r}, ${g}, ${b}, ${0.3 * pulse})`;

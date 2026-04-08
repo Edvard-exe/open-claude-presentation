@@ -1,0 +1,212 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0f0f17;
+  color: #e4e4e7;
+  min-height: 100dvh;
+}
+
+.contribute {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.contribute__header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.contribute__header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.contribute__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #71717a;
+}
+
+.contribute__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #71717a;
+  transition: background 0.3s;
+}
+
+.contribute__status--on {
+  color: #22c55e;
+}
+
+.contribute__status--on .contribute__dot {
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+.contribute__mode {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.contribute__mode-btn {
+  flex: 1;
+  padding: 12px 10px;
+  border: 1px solid #27272a;
+  background: #18181b;
+  color: #a1a1aa;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.contribute__mode-btn--active {
+  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.12);
+  color: #c4b5fd;
+}
+
+.contribute__field {
+  margin-bottom: 16px;
+}
+
+.contribute__field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #a1a1aa;
+  margin-bottom: 6px;
+}
+
+.contribute__field input,
+.contribute__field select,
+.contribute__field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 10px;
+  color: #e4e4e7;
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+}
+
+.contribute__field input:focus,
+.contribute__field select:focus,
+.contribute__field textarea:focus {
+  border-color: #7c3aed;
+}
+
+.contribute__field select {
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.contribute__field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.contribute__path-input {
+  display: flex;
+  align-items: center;
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.contribute__path-input:focus-within {
+  border-color: #7c3aed;
+}
+
+.contribute__path-prefix {
+  padding: 12px 0 12px 14px;
+  font-size: 16px;
+  font-family: 'SF Mono', Menlo, monospace;
+  color: #71717a;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.contribute__path-input input {
+  border: none;
+  background: none;
+  padding-left: 0;
+  border-radius: 0;
+}
+
+.contribute__path-input input:focus {
+  border-color: transparent;
+}
+
+.contribute__field--short {
+  max-width: 140px;
+}
+
+.contribute__divider {
+  font-size: 11px;
+  font-weight: 600;
+  color: #52525b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 24px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #27272a;
+}
+
+.contribute__submit {
+  width: 100%;
+  padding: 14px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.contribute__submit:active {
+  background: #6d28d9;
+}
+
+.contribute__submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.contribute__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 20px;
+}
+
+.contribute__success p {
+  font-size: 20px;
+  font-weight: 600;
+  color: #22c55e;
+}

@@ -8,6 +8,7 @@ export function Toolbar() {
   const pan = useBoardStore((s) => s.pan);
   const presentationActive = useBoardStore((s) => s.presentationActive);
   const startPresentation = useBoardStore((s) => s.startPresentation);
+  const toggleQR = useBoardStore((s) => s.toggleQR);
 
   const handleZoomIn = () => setZoom(zoom * 1.2);
   const handleZoomOut = () => setZoom(zoom / 1.2);
@@ -48,6 +49,20 @@ export function Toolbar() {
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
           <path d="M5.5 8h5M8 5.5v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      </button>
+      <button className="toolbar__btn" onClick={toggleQR} title="Show QR code (Q)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+          <rect x="10" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+          <rect x="1" y="10" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+          <rect x="3" y="3" width="1.5" height="1.5" fill="currentColor" />
+          <rect x="12" y="3" width="1.5" height="1.5" fill="currentColor" />
+          <rect x="3" y="12" width="1.5" height="1.5" fill="currentColor" />
+          <rect x="10" y="10" width="2" height="2" fill="currentColor" />
+          <rect x="13" y="10" width="2" height="2" fill="currentColor" />
+          <rect x="10" y="13" width="2" height="2" fill="currentColor" />
+          <rect x="13" y="13" width="2" height="2" fill="currentColor" />
         </svg>
       </button>
       <div className="toolbar__divider" />

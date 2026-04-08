@@ -46,8 +46,8 @@ export function NeuralBackground({ width, height, color }: Props) {
       nodesRef.current = Array.from({ length: nodeCount }, () => ({
         x: Math.random() * width,
         y: bandTop + Math.random() * bandHeight,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
         radius: 1.5 + Math.random() * 2,
         pulsePhase: Math.random() * Math.PI * 2,
       }));
@@ -82,7 +82,7 @@ export function NeuralBackground({ width, height, color }: Props) {
           if (dist < connectionDistance) {
             const alpha = (1 - dist / connectionDistance) * 0.15;
             // Pulsing signal along connections
-            const pulse = Math.sin(time * 0.002 + nodes[i].pulsePhase) * 0.5 + 0.5;
+            const pulse = Math.sin(time * 0.001 + nodes[i].pulsePhase) * 0.5 + 0.5;
             const finalAlpha = alpha * (0.5 + pulse * 0.5);
 
             ctx!.beginPath();
@@ -94,7 +94,7 @@ export function NeuralBackground({ width, height, color }: Props) {
 
             // Draw a traveling signal dot on some connections
             if (alpha > 0.1) {
-              const signalPos = (Math.sin(time * 0.003 + i * 0.7) * 0.5 + 0.5);
+              const signalPos = (Math.sin(time * 0.0015 + i * 0.7) * 0.5 + 0.5);
               const sx = nodes[i].x + (nodes[j].x - nodes[i].x) * signalPos;
               const sy = nodes[i].y + (nodes[j].y - nodes[i].y) * signalPos;
               ctx!.beginPath();
@@ -108,7 +108,7 @@ export function NeuralBackground({ width, height, color }: Props) {
 
       // Draw nodes
       for (const node of nodes) {
-        const pulse = Math.sin(time * 0.003 + node.pulsePhase) * 0.5 + 0.5;
+        const pulse = Math.sin(time * 0.0015 + node.pulsePhase) * 0.5 + 0.5;
         const currentRadius = node.radius * (0.8 + pulse * 0.4);
 
         // Glow

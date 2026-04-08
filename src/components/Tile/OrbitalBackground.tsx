@@ -42,12 +42,12 @@ export function OrbitalBackground({ width, height, color }: Props) {
     // Create orbiting agents
     if (orbitsRef.current.length === 0) {
       orbitsRef.current = [
-        { angle: 0, speed: 0.008, radius: 50, size: 4, phase: 0, trailLength: 0.8 },
-        { angle: Math.PI * 0.66, speed: 0.006, radius: 70, size: 3.5, phase: 1, trailLength: 0.6 },
-        { angle: Math.PI * 1.33, speed: 0.01, radius: 35, size: 3, phase: 2, trailLength: 0.7 },
+        { angle: 0, speed: 0.004, radius: 50, size: 4, phase: 0, trailLength: 0.8 },
+        { angle: Math.PI * 0.66, speed: 0.003, radius: 70, size: 3.5, phase: 1, trailLength: 0.6 },
+        { angle: Math.PI * 1.33, speed: 0.005, radius: 35, size: 3, phase: 2, trailLength: 0.7 },
         // Outer slower ones
-        { angle: Math.PI * 0.3, speed: 0.004, radius: 90, size: 2.5, phase: 3, trailLength: 0.5 },
-        { angle: Math.PI * 1.1, speed: 0.005, radius: 85, size: 2, phase: 4, trailLength: 0.4 },
+        { angle: Math.PI * 0.3, speed: 0.002, radius: 90, size: 2.5, phase: 3, trailLength: 0.5 },
+        { angle: Math.PI * 1.1, speed: 0.0025, radius: 85, size: 2, phase: 4, trailLength: 0.4 },
       ];
     }
 
@@ -67,7 +67,7 @@ export function OrbitalBackground({ width, height, color }: Props) {
       }
 
       // Draw central hub
-      const hubPulse = Math.sin(time * 0.002) * 0.3 + 0.7;
+      const hubPulse = Math.sin(time * 0.001) * 0.3 + 0.7;
 
       // Hub glow
       const gradient = ctx!.createRadialGradient(cx, cy, 0, cx, cy, 20);
@@ -106,7 +106,7 @@ export function OrbitalBackground({ width, height, color }: Props) {
         }
 
         // Connection line to hub (pulsing)
-        const connAlpha = 0.05 + Math.sin(time * 0.003 + orbit.phase) * 0.03;
+        const connAlpha = 0.05 + Math.sin(time * 0.0015 + orbit.phase) * 0.03;
         ctx!.beginPath();
         ctx!.moveTo(cx, cy);
         ctx!.lineTo(ox, oy);
@@ -115,7 +115,7 @@ export function OrbitalBackground({ width, height, color }: Props) {
         ctx!.stroke();
 
         // Agent dot
-        const agentPulse = Math.sin(time * 0.004 + orbit.phase * 2) * 0.3 + 0.7;
+        const agentPulse = Math.sin(time * 0.002 + orbit.phase * 2) * 0.3 + 0.7;
         ctx!.beginPath();
         ctx!.arc(ox, oy, orbit.size * agentPulse, 0, Math.PI * 2);
         ctx!.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.4 + agentPulse * 0.3})`;

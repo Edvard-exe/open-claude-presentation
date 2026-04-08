@@ -75,4 +75,9 @@ export interface BoardState {
   presentationPrev: () => void;
   goToStep: (index: number) => void;
   setPresentationTransitioning: (v: boolean) => void;
+
+  // QR overlay
+  showQR: boolean;
+  toggleQR: () => void;
+  closeQR: () => void;
 }

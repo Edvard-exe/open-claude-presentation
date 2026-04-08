@@ -8,6 +8,7 @@ import { ShieldBackground } from './ShieldBackground';
 import { MailboxBackground } from './MailboxBackground';
 import { HooksBackground } from './HooksBackground';
 import { CompactorBackground } from './CompactorBackground';
+import { deleteTilePermanently } from '../../hooks/useContributions';
 import type { TileData } from '../../types/board';
 import './Tile.css';
 
@@ -21,6 +22,7 @@ export function Tile({ tile }: TileProps) {
   const openDiagram = useBoardStore((s) => s.openDiagram);
   const openSubItem = useBoardStore((s) => s.openSubItem);
   const diveTile = useBoardStore((s) => s.diveTile);
+  const presentationActive = useBoardStore((s) => s.presentationActive);
   const isSelected = selectedTileId === tile.id;
   const isPresenting = activeTileId === tile.id;
   const dragHandlers = useTileDrag(tile.id);
@@ -85,6 +87,18 @@ export function Tile({ tile }: TileProps) {
           default: return <NeuralBackground {...bgProps} />;
         }
       })()}
+      {!presentationActive && tile.id.startsWith('tile-contrib-') && (
+        <button
+          className="tile__remove"
+          onClick={(e) => { e.stopPropagation(); deleteTilePermanently(tile.id); }}
+          onPointerDown={(e) => e.stopPropagation()}
+          title="Remove tile"
+        >
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
       <div className="tile__body">
         <div className="tile__header">
           {tile.animated && <div className="tile__pulse" />}

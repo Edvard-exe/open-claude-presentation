@@ -83,6 +83,13 @@ export function useCanvasGestures(containerRef: React.RefObject<HTMLDivElement |
       }
     }
 
+    // Toggle QR overlay with 'q'
+    if (e.key === 'q' && !e.repeat && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault();
+      state.toggleQR();
+      return;
+    }
+
     // Toggle presentation with 'p'
     if (e.key === 'p' && !e.repeat && !e.metaKey && !e.ctrlKey) {
       e.preventDefault();

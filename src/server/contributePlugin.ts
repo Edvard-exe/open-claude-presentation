@@ -11,7 +11,6 @@ const INITIAL_TILES = [
   { id: 'tile-core-architecture', title: 'Core Architecture' },
   { id: 'tile-agent-system', title: 'Agent System' },
   { id: 'tile-caching', title: 'Prompt Caching' },
-  { id: 'tile-autonomous', title: 'Autonomous Mode' },
   { id: 'tile-mailbox', title: 'Agent Mailbox' },
   { id: 'tile-hooks', title: 'Hooks' },
   { id: 'tile-compaction', title: 'Compaction' },

@@ -140,7 +140,7 @@ export const useBoardStore = create<BoardState>((set) => ({
       width: 360,
       height: 540,
       title: 'Agent System',
-      content: 'Multi-agent orchestration — spawn sub-agents, coordinate work, manage autonomous sessions. Parent of Advisor, Kairos, and Mailbox.',
+      content: 'Multi-agent orchestration — spawn sub-agents, coordinate work, manage autonomous sessions. Includes Advisor, Kairos, fork-join parallelism, and coordinator mode.',
       filePath: '/src/tools/AgentTool/',
       color: '#2563EB',
       diagramId: 'agent-system',

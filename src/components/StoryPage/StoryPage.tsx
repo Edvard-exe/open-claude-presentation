@@ -293,7 +293,8 @@ export function StoryPage() {
                     const m = f.source.match(/^(.+?):(\d+)$/);
                     const fp = m ? m[1] : f.source;
                     const ln = m ? m[2] : undefined;
-                    return `cursor://file/Users/illiafilipas/code/collection-claude-code-source-code/claude-code-source-code/${fp}${ln ? `:${ln}:1` : ''}`;
+                    const root = import.meta.env.VITE_SOURCE_ROOT || '';
+                    return `cursor://file${root}/${fp}${ln ? `:${ln}:1` : ''}`;
                   })()} onClick={(e) => e.stopPropagation()} title="Open in Cursor" style={{ textDecoration: 'none', color: 'inherit' }}>{f.source}</a>
                 </div>
               )}

@@ -21,7 +21,8 @@ export function SubItemOverlay() {
 
   const handleOpenInCursor = () => {
     if (item.filePath) {
-      const url = `cursor://file/Users/illiafilipas/code/collection-claude-code-source-code/claude-code-source-code/${item.filePath}${item.line ? `:${item.line}:1` : ''}`;
+      const root = import.meta.env.VITE_SOURCE_ROOT || '';
+      const url = `cursor://file${root}/${item.filePath}${item.line ? `:${item.line}:1` : ''}`;
       window.location.href = url;
     }
   };

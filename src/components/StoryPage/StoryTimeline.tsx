@@ -96,7 +96,8 @@ export function StoryTimeline({ steps, color, activeStep, onStepChange }: StoryT
               const m = src.match(/^(.+?):(\d+)$/);
               const filePath = m ? m[1] : src;
               const line = m ? m[2] : undefined;
-              const cursorHref = `cursor://file/Users/illiafilipas/code/collection-claude-code-source-code/claude-code-source-code/${filePath}${line ? `:${line}:1` : ''}`;
+              const root = import.meta.env.VITE_SOURCE_ROOT || '';
+              const cursorHref = `cursor://file${root}/${filePath}${line ? `:${line}:1` : ''}`;
               return (
                 <a className="step-card__source" href={cursorHref} onClick={(e) => e.stopPropagation()} title="Open in Cursor" style={{ textDecoration: 'none', color: 'inherit' }}>
                   {src}

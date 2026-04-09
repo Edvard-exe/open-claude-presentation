@@ -14,7 +14,7 @@ import { MailboxRouteDemo } from './MailboxRouteDemo';
 import { MemoryLayersDemo } from './MemoryLayersDemo';
 import './StoryOverlay.css';
 
-const SOURCE_ROOT = '/Users/illiafilipas/code/collection-claude-code-source-code/claude-code-source-code';
+const SOURCE_ROOT = import.meta.env.VITE_SOURCE_ROOT || '/Users/illiafilipas/code/collection-claude-code-source-code/claude-code-source-code';
 
 function SourceLink({ source, className }: { source: string; className?: string }) {
   const match = source.match(/^(.+?):(\d+)$/);

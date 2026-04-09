@@ -3,7 +3,7 @@ import type { AnimationStep } from '../types/board';
 /**
  * Presentation steps following the exact execution flow of the agentic loop.
  * Matches main branch order: Core → Compact → Cache → Core → Hooks → Security →
- * Core → Agent → Mailbox → Hooks → Core
+ * Core → Agent → Mailbox → Core
  */
 export const ANIMATION_STEPS: AnimationStep[] = [
   // ── Core loop entry ───────────────────────────────────────────
@@ -21,7 +21,7 @@ export const ANIMATION_STEPS: AnimationStep[] = [
     connection: { from: 'tile-core-architecture', to: 'tile-compaction', label: 'autoCompact' },
     label: 'Check compaction thresholds',
     codeRef: 'query.ts:401',
-    description: 'chars÷3.5 token estimate. 70% threshold triggers: snip → microcompact → full compact.',
+    description: 'chars÷4 token estimate. 70% threshold triggers: snip → microcompact → full compact.',
   },
 
   // ── Cache breakpoints ─────────────────────────────────────────
@@ -83,19 +83,12 @@ export const ANIMATION_STEPS: AnimationStep[] = [
     description: 'In-process queue or file-based mailbox. Task notifications arrive as user-role messages.',
   },
 
-  // ── Post-execution ────────────────────────────────────────────
-  {
-    tileId: 'tile-hooks',
-    connection: { from: 'tile-mailbox', to: 'tile-hooks', label: 'PostToolUse' },
-    label: 'PostToolUse + Stop hooks',
-    codeRef: 'hooks.ts:3450',
-    description: 'Post-execution hooks observe results. Stop hooks can FORCE model to continue (exit code 2).',
-  },
+  // ── Loop back ──────────────────────────────────────────────────
   {
     tileId: 'tile-core-architecture',
-    connection: { from: 'tile-hooks', to: 'tile-core-architecture', label: 'loop' },
+    connection: { from: 'tile-mailbox', to: 'tile-core-architecture', label: 'loop' },
     label: 'Loop continues or completes',
     codeRef: 'query.ts:1357',
-    description: 'No tool_calls → done. Tool_calls → loop. Same loop powers all modes.',
+    description: 'PostToolUse + Stop hooks fire. No tool_calls → done. Tool_calls → loop. Same loop powers all modes.',
   },
 ];

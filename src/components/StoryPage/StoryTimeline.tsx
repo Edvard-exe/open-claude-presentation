@@ -109,7 +109,7 @@ export function StoryTimeline({ steps, color, activeStep, onStepChange }: StoryT
             <div className="step-card__content">{steps[activeStep].content}</div>
           )}
           {steps[activeStep].footer && (
-            <div className="step-card__footer" dangerouslySetInnerHTML={{ __html: steps[activeStep].footer! }} />
+            <div className="step-card__footer">{steps[activeStep].footer}</div>
           )}
         </div>
       )}

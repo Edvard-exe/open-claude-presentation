@@ -102,11 +102,11 @@ export function StoryOverlay() {
 
         {/* Controls */}
         <div className="story-controls">
-          <button className="story-controls__btn" onClick={() => setActive(Math.max(0, active - 1))}>‹</button>
-          <button className={`story-controls__btn ${!playing ? 'story-controls__btn--play' : ''}`} onClick={() => setPlaying(!playing)}>
+          <button type="button" aria-label="Previous step" className="story-controls__btn" onClick={() => setActive(Math.max(0, active - 1))}>‹</button>
+          <button type="button" aria-label={playing ? 'Pause' : 'Play'} className={`story-controls__btn ${!playing ? 'story-controls__btn--play' : ''}`} onClick={() => setPlaying(!playing)}>
             {playing ? '⏸' : '▶'}
           </button>
-          <button className="story-controls__btn" onClick={() => setActive(Math.min(steps.length - 1, active + 1))}>›</button>
+          <button type="button" aria-label="Next step" className="story-controls__btn" onClick={() => setActive(Math.min(steps.length - 1, active + 1))}>›</button>
           <span className="story-controls__counter">{active + 1} / {steps.length}</span>
         </div>
 
@@ -173,7 +173,7 @@ function StepCard({ step, index }: { step: StoryStep; index: number }) {
 
       {/* Footer */}
       {step.footer && (
-        <div className="story-card__footer" dangerouslySetInnerHTML={{ __html: step.footer }} />
+        <div className="story-card__footer">{step.footer}</div>
       )}
     </div>
   );

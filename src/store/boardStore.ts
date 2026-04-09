@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { nanoid } from 'nanoid';
 import type { BoardState, Position, TileData } from '../types/board';
 import { ANIMATION_STEPS } from '../data/animationSteps';
 
@@ -322,8 +321,6 @@ export const useBoardStore = create<BoardState>((set) => ({
 
   setPan: (pan: Position) => set({ pan }),
   setZoom: (zoom: number) => set({ zoom: Math.min(Math.max(zoom, 0.1), 5) }),
-  addTile: (tile: Omit<TileData, 'id'>) =>
-    set((state) => ({ tiles: [...state.tiles, { ...tile, id: nanoid() }] })),
   updateTilePosition: (id: string, position: Position) =>
     set((state) => ({
       tiles: state.tiles.map((t) => (t.id === id ? { ...t, position } : t)),

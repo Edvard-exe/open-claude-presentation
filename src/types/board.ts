@@ -52,7 +52,6 @@ export interface BoardState {
 
   setPan: (pan: Position) => void;
   setZoom: (zoom: number) => void;
-  addTile: (tile: Omit<TileData, 'id'>) => void;
   updateTilePosition: (id: string, position: Position) => void;
   updateTile: (id: string, updates: Partial<TileData>) => void;
   removeTile: (id: string) => void;

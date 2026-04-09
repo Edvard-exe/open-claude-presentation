@@ -21,6 +21,7 @@ export function Tile({ tile }: TileProps) {
   const activeTileId = useBoardStore((s) => s.activeTileId);
   const openDiagram = useBoardStore((s) => s.openDiagram);
   const openSubItem = useBoardStore((s) => s.openSubItem);
+  const diveTile = useBoardStore((s) => s.diveTile);
   const presentationActive = useBoardStore((s) => s.presentationActive);
   const isSelected = selectedTileId === tile.id;
   const isPresenting = activeTileId === tile.id;
@@ -39,16 +40,21 @@ export function Tile({ tile }: TileProps) {
     (e: React.PointerEvent) => {
       dragHandlers.onPointerUp(e);
 
-      if (tile.diagramId && pointerDownPos.current) {
+      if (pointerDownPos.current) {
         const dx = Math.abs(e.clientX - pointerDownPos.current.x);
         const dy = Math.abs(e.clientY - pointerDownPos.current.y);
         if (dx < 5 && dy < 5) {
-          openDiagram(tile.diagramId);
+          // Click (not drag) — dive into story if available, otherwise open diagram
+          if (tile.storySteps?.length) {
+            diveTile(tile.id);
+          } else if (tile.diagramId) {
+            openDiagram(tile.diagramId);
+          }
         }
       }
       pointerDownPos.current = null;
     },
-    [dragHandlers, tile.diagramId, openDiagram]
+    [dragHandlers, tile.diagramId, tile.storySteps, tile.id, openDiagram, diveTile]
   );
 
   const accentColor = tile.color || '#4A90D9';
@@ -97,6 +103,21 @@ export function Tile({ tile }: TileProps) {
         <div className="tile__header">
           {tile.animated && <div className="tile__pulse" />}
           <span className="tile__title">{tile.title}</span>
+          {tile.diagramId && (
+            <button
+              className="tile__diagram-btn"
+              title="View architecture diagram"
+              onClick={(e) => { e.stopPropagation(); openDiagram(tile.diagramId!); }}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <rect x="10" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <rect x="5.5" y="10" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+                <path d="M3.5 6v2.5a1 1 0 001 1h3M12.5 6v2.5a1 1 0 01-1 1h-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              </svg>
+            </button>
+          )}
         </div>
         {tile.content && <div className="tile__content">{tile.content}</div>}
         {hasSubItems && (
@@ -153,14 +174,21 @@ export function Tile({ tile }: TileProps) {
             )}
           </div>
         )}
-        {tile.diagramId && (
+        {tile.storySteps?.length ? (
+          <div className="tile__cta">
+            Click to explore story
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        ) : tile.diagramId ? (
           <div className="tile__cta">
             Click to explore
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

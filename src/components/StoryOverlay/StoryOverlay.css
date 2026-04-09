@@ -1,0 +1,327 @@
+.story-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(5, 5, 10, 0.95);
+  backdrop-filter: blur(20px);
+  overflow-y: auto;
+  animation: storyFadeIn 0.3s ease-out;
+}
+
+@keyframes storyFadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.story-overlay__inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header */
+.story-overlay__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.story-overlay__back {
+  background: none;
+  border: 1px solid #333;
+  color: #aaa;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.story-overlay__back:hover {
+  border-color: var(--tile-color, #c9a84c);
+  color: var(--tile-color, #c9a84c);
+}
+
+.story-overlay__title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--tile-color, #fff);
+}
+
+.story-overlay__source {
+  font-size: 0.75rem;
+  color: #555;
+  background: #1a1a25;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-family: 'SF Mono', Menlo, monospace;
+  margin-left: auto;
+}
+
+.story-overlay__desc {
+  color: #999;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Timeline */
+.story-tl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 1rem 0;
+}
+
+.story-tl__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  min-width: 64px;
+}
+
+.story-tl__circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 2px solid #333;
+  color: #555;
+  background: #0a0a0f;
+  transition: all 0.25s;
+  z-index: 1;
+}
+
+.story-tl__circle--active {
+  border-color: var(--tile-color, #c9a84c);
+  background: var(--tile-color, #c9a84c);
+  color: #000;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--tile-color, #c9a84c) 40%, transparent);
+}
+
+.story-tl__circle--visited {
+  border-color: var(--tile-color, #c9a84c);
+  color: var(--tile-color, #c9a84c);
+}
+
+.story-tl__label {
+  font-size: 0.6rem;
+  color: #444;
+  margin-top: 0.35rem;
+  text-align: center;
+  max-width: 64px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.story-tl__label--active {
+  color: var(--tile-color, #c9a84c);
+}
+
+.story-tl__line {
+  width: 24px;
+  height: 2px;
+  background: #222;
+  margin-top: -14px;
+}
+
+.story-tl__line--active {
+  background: var(--tile-color, #c9a84c);
+}
+
+/* Controls */
+.story-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0 1.5rem;
+}
+
+.story-controls__btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid #333;
+  background: none;
+  color: #aaa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.story-controls__btn:hover {
+  border-color: var(--tile-color);
+  color: var(--tile-color);
+}
+
+.story-controls__btn--play {
+  background: var(--tile-color);
+  border-color: var(--tile-color);
+  color: #000;
+}
+
+.story-controls__counter {
+  font-size: 0.8rem;
+  color: #555;
+  min-width: 48px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Step Card */
+.story-card {
+  background: #0e0e18;
+  border: 1px solid #1e1e2e;
+  border-radius: 14px;
+  padding: 1.5rem;
+  animation: storyFadeIn 0.25s ease-out;
+}
+
+.story-card__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.story-card__num {
+  font-weight: 800;
+  color: var(--tile-color);
+  margin-right: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.story-card__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.story-card__src {
+  font-size: 0.7rem;
+  color: #555;
+  background: #161622;
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  font-family: 'SF Mono', Menlo, monospace;
+}
+
+.story-card__desc {
+  color: #999;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0.75rem 0;
+}
+
+/* Spark callout */
+.story-spark {
+  background: color-mix(in srgb, var(--tile-color, #c9a84c) 8%, transparent);
+  border-left: 3px solid var(--tile-color, #c9a84c);
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  color: var(--tile-color, #c9a84c);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.story-spark::before {
+  content: '💡 ';
+}
+
+/* Code block */
+.story-code {
+  background: #0a0a12;
+  border: 1px solid #1a1a28;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.75rem 0;
+}
+
+.story-code__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #12121e;
+  border-bottom: 1px solid #1a1a28;
+  font-size: 0.7rem;
+  color: #555;
+  font-family: 'SF Mono', Menlo, monospace;
+}
+
+.story-code__body {
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: 'SF Mono', 'Fira Code', Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: #bbb;
+  white-space: pre;
+  tab-size: 2;
+}
+
+/* Terminal */
+.story-term {
+  background: #0a0a12;
+  border: 1px solid #1a1a28;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0.75rem 0;
+}
+
+.story-term__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 0.75rem;
+  background: #12121e;
+  border-bottom: 1px solid #1a1a28;
+}
+
+.story-term__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.story-term__body {
+  padding: 0.75rem 1rem;
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #ccc;
+  white-space: pre-wrap;
+}
+
+/* Footer */
+.story-card__footer {
+  font-size: 0.8rem;
+  color: #666;
+  line-height: 1.6;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #1a1a28;
+}
+
+.story-card__footer code {
+  background: #161622;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  color: #aaa;
+  font-size: 0.75rem;
+}

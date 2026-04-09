@@ -19,6 +19,19 @@ export interface TileSubItem {
   line?: number;
 }
 
+export interface StoryStep {
+  label: string;
+  title: string;
+  source?: string;
+  description: string;
+  code?: string;
+  codeLang?: 'typescript' | 'python' | 'bash' | 'json';
+  terminal?: { command: string; output: string };
+  spark?: string;
+  footer?: string;
+  demo?: 'advisor' | 'kairos' | 'loop' | 'stream' | 'parallel-tools' | 'cache-cost' | 'hook-stop' | 'permission-gate' | 'compaction' | 'mailbox-route' | 'memory-layers';
+}
+
 export interface TileData {
   id: string;
   position: Position;
@@ -33,6 +46,7 @@ export interface TileData {
   animated?: boolean;
   backgroundType?: 'neural' | 'orbital' | 'cache' | 'shield' | 'mailbox' | 'hooks' | 'compactor';
   subItems?: TileSubItem[];
+  storySteps?: StoryStep[];
 }
 
 export interface Connection {
@@ -49,6 +63,7 @@ export interface BoardState {
   selectedTileId: string | null;
   openDiagramId: string | null;
   openSubItemData: TileSubItem | null;
+  divedTileId: string | null;
 
   setPan: (pan: Position) => void;
   setZoom: (zoom: number) => void;
@@ -61,6 +76,8 @@ export interface BoardState {
   closeDiagram: () => void;
   openSubItem: (item: TileSubItem) => void;
   closeSubItem: () => void;
+  diveTile: (id: string) => void;
+  undive: () => void;
 
   // Presentation playback
   presentationActive: boolean;

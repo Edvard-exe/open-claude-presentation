@@ -89,7 +89,7 @@ export function CacheBackground({ width, height, color }: Props) {
         particles.push({
           x: padX,
           y: blk.y + blk.height / 2,
-          speed: 0.4 + Math.random() * 0.5,
+          speed: 0.2 + Math.random() * 0.25,
           size: 1.2 + Math.random() * 0.8,
           blockIndex: bi,
         });
@@ -155,7 +155,7 @@ export function CacheBackground({ width, height, color }: Props) {
       }
 
       // --- breakpoint line ---
-      const pulse = Math.sin(time * 0.0025) * 0.1 + 0.35;
+      const pulse = Math.sin(time * 0.00125) * 0.1 + 0.35;
       ctx!.setLineDash([6, 4]);
       ctx!.strokeStyle = `rgba(${cr}, ${cg}, ${cb}, ${pulse})`;
       ctx!.lineWidth = 1;

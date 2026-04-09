@@ -56,7 +56,7 @@ export function MailboxBackground({ width, height, color }: Props) {
         y: from.y,
         targetX: to.x,
         targetY: to.y,
-        speed: 0.008 + Math.random() * 0.006,
+        speed: 0.004 + Math.random() * 0.003,
         progress: 0,
         channel,
         queued: false,
@@ -90,7 +90,7 @@ export function MailboxBackground({ width, height, color }: Props) {
 
       // Draw nodes
       for (const node of [nodeA, nodeB]) {
-        const pulse = Math.sin(time * 0.002 + (node === nodeA ? 0 : Math.PI)) * 0.3 + 0.7;
+        const pulse = Math.sin(time * 0.001 + (node === nodeA ? 0 : Math.PI)) * 0.3 + 0.7;
 
         // Glow
         ctx!.beginPath();
@@ -166,7 +166,7 @@ export function MailboxBackground({ width, height, color }: Props) {
 
         // Draw message particle
         const alpha = m.queued && !m.draining
-          ? 0.3 + Math.sin(time * 0.005 + i) * 0.15
+          ? 0.3 + Math.sin(time * 0.0025 + i) * 0.15
           : 0.4 * (1 - Math.max(0, t - 0.8) * 5);
 
         // Trail

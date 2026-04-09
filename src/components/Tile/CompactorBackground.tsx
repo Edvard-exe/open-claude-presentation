@@ -74,8 +74,8 @@ export function CompactorBackground({ width, height, color }: Props) {
         particles.push({
           x,
           y: y + Math.random() * 20,
-          vx: 0.5 + Math.random() * 1.5,
-          vy: (Math.random() - 0.5) * 2,
+          vx: 0.25 + Math.random() * 0.75,
+          vy: (Math.random() - 0.5) * 1,
           life: 40 + Math.random() * 30,
           size: 1 + Math.random() * 1.5,
         });
@@ -164,7 +164,7 @@ export function CompactorBackground({ width, height, color }: Props) {
       }
 
       // Update sweep
-      sweepRef.current += 0.002;
+      sweepRef.current += 0.001;
       if (sweepRef.current > 1.3) {
         cycleRef.current++;
         sweepRef.current = -0.3;

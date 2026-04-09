@@ -94,7 +94,6 @@ function applyContribution(c: Contribution): void {
           color: tile.color || '#10B981',
         },
       ],
-      height: tile.height + 70,
     });
   }
 }

@@ -8,67 +8,19 @@ const CACHE_ID = 'tile-caching';
 const MAILBOX_ID = 'tile-mailbox';
 const HOOKS_ID = 'tile-hooks';
 const COMPACT_ID = 'tile-compaction';
-const PROMPT_ID = 'tile-prompt-stack';
-const SECURITY_ID = 'tile-security';
 
 export const useBoardStore = create<BoardState>((set) => ({
   pan: { x: 0, y: 0 },
   zoom: 1,
   tiles: [
     // ════════════════════════════════════════════════════════════
-    //  ROW 1 — Main flow: Prompt → Core → Agents → Mailbox
+    //  ROW 1 — Main flow: Core → Agents → Mailbox
     // ════════════════════════════════════════════════════════════
-    {
-      id: PROMPT_ID,
-      position: { x: -380, y: 120 },
-      width: 360,
-      height: 440,
-      title: 'Prompt Stack',
-      content: 'Layered system prompt: identity → tools → guidelines → environment → git → CLAUDE.md → memory → autonomous. Static prefix cached globally; dynamic sections per-session.',
-      filePath: '/src/constants/prompts.ts',
-      color: '#40A0E0',
-      animated: true,
-      storySteps: [
-        { label: 'Layers', title: '8-Layer System Prompt', source: 'src/constants/prompts.ts:444', description: 'Identity → tool descriptions (53+) → coding guidelines → environment → git info → CLAUDE.md → memory → autonomous section.', code: '// src/constants/prompts.ts:444\nexport async function getSystemPrompt(\n  tools: Tools,\n  model: string,\n  additionalWorkingDirectories?: string[],\n  mcpClients?: MCPServerConnection[],\n): Promise<string[]> {\n  if (isEnvTruthy(process.env.CLAUDE_CODE_SIMPLE)) {\n    return [\n      `You are Claude Code, Anthropic\'s official CLI for Claude.\\n\\nCWD: ${getCwd()}\\nDate: ${getSessionStartDate()}`,\n    ]\n  }\n\n  const cwd = getCwd()\n  const [skillToolCommands, outputStyleConfig, envInfo] = await Promise.all([\n    getSkillToolCommands(cwd),\n    getOutputStyleConfig(),\n    computeSimpleEnvInfo(model, additionalWorkingDirectories),\n  ])\n  const settings = getInitialSettings()\n  const enabledTools = new Set(tools.map(_ => _.name))\n  // ... assembles 8 layers\n}', codeLang: 'typescript', spark: '8 lines of loop. 700 lines of prompt. The prompt IS the framework. When Claude gets smarter, Claude Code automatically gets smarter.' },
-        { label: 'Boundary', title: 'Cache Boundary Split', source: 'src/constants/prompts.ts:115', description: '__SYSTEM_PROMPT_DYNAMIC_BOUNDARY__ splits static from dynamic. Static prefix (~15K tokens) cached at scope:global — shared across ALL users.', code: '// src/constants/prompts.ts:114\n// WARNING: Do not remove or reorder this marker without updating\n// cache logic in:\n// - src/utils/api.ts (splitSysPromptPrefix)\n// - src/services/api/claude.ts (buildSystemPromptBlocks)\nexport const SYSTEM_PROMPT_DYNAMIC_BOUNDARY =\n  \'__SYSTEM_PROMPT_DYNAMIC_BOUNDARY__\'\n\n// @[MODEL LAUNCH]: Update the latest frontier model.\nconst FRONTIER_MODEL_NAME = \'Claude Opus 4.6\'', codeLang: 'typescript', spark: 'One marker in one file saves 90% on 15K tokens for every user. That\'s the most cost-effective line of code in the entire codebase.' },
-        { label: 'Memo', title: 'Section Memoization', source: 'src/constants/systemPromptSections.ts', description: 'systemPromptSection() caches until /clear. DANGEROUS_uncachedSystemPromptSection() recomputes every turn (breaks cache if changed).', code: '// src/constants/systemPromptSections.ts:20\nexport function systemPromptSection(\n  name: string,\n  compute: ComputeFn,\n): SystemPromptSection {\n  return { name, compute, cacheBreak: false }\n}\n\n// This WILL break the prompt cache when the value changes.\n// Requires a reason explaining why cache-breaking is necessary.\nexport function DANGEROUS_uncachedSystemPromptSection(\n  name: string,\n  compute: ComputeFn,\n  _reason: string,\n): SystemPromptSection {\n  return { name, compute, cacheBreak: true }\n}\n\nexport async function resolveSystemPromptSections(\n  sections: SystemPromptSection[],\n): Promise<(string | null)[]> {\n  const cache = getSystemPromptSectionCache()\n  return Promise.all(\n    sections.map(async s => {\n      if (!s.cacheBreak && cache.has(s.name)) {\n        return cache.get(s.name) ?? null\n      }\n      const value = await s.compute()\n      setSystemPromptSectionCacheEntry(s.name, value)\n      return value\n    }),\n  )\n}', codeLang: 'typescript', spark: 'The prefix "DANGEROUS_" in the function name forces engineers to document why a section needs per-turn recomputation. Convention as safety.' },
-        { label: 'Modes', title: 'Prompt Mode Switching', source: 'src/utils/systemPrompt.ts:41', description: 'Same loop, different prompt: Default (coding assistant), Coordinator (orchestrate workers), Proactive/Kairos (autonomous with Sleep), Custom Agent (explore, plan, verify).', code: '// src/utils/systemPrompt.ts:41\nexport function buildEffectiveSystemPrompt({\n  mainThreadAgentDefinition,\n  toolUseContext,\n  customSystemPrompt,\n  defaultSystemPrompt,\n  appendSystemPrompt,\n  overrideSystemPrompt,\n}: {\n  mainThreadAgentDefinition: AgentDefinition | undefined\n  toolUseContext: Pick<ToolUseContext, \'options\'>\n  customSystemPrompt: string | undefined\n  defaultSystemPrompt: string[]\n  appendSystemPrompt: string | undefined\n  overrideSystemPrompt?: string | null\n}): SystemPrompt {\n  if (overrideSystemPrompt) {\n    return asSystemPrompt([overrideSystemPrompt])\n  }\n  // Coordinator mode: use coordinator prompt instead of default\n  // ...\n}', codeLang: 'typescript', spark: 'The entire behavior of Claude Code changes by swapping prompt text. No code changes. No new features. Just different instructions to the same loop.' },
-      ],
-      subItems: [
-        {
-          label: 'Static Prefix (~15K tokens)',
-          description: 'Identity, coding rules, tool guidance, safety ("blast radius"), style — identical for ALL users. Cached at scope:global. 90% cheaper on cache hits.',
-          color: '#40A0E0',
-          filePath: 'src/constants/prompts.ts',
-          line: 175,
-        },
-        {
-          label: '__DYNAMIC_BOUNDARY__',
-          description: 'Marker that splits static from dynamic. Everything before = globally cached. Everything after = per-session (CLAUDE.md, env info, MCP instructions, memory).',
-          color: '#40A0E0',
-          filePath: 'src/constants/prompts.ts',
-          line: 115,
-        },
-        {
-          label: 'Section Memoization',
-          description: 'systemPromptSection() caches results until /clear or /compact. DANGEROUS_uncachedSystemPromptSection() recomputes every turn (breaks cache if value changes).',
-          color: '#40A0E0',
-          filePath: 'src/constants/systemPromptSections.ts',
-        },
-        {
-          label: 'Mode Switching',
-          description: 'Same loop, different prompt: Default (coding assistant), Coordinator (orchestrate workers), Proactive/Kairos (autonomous with Sleep), Custom Agent (explore, plan, verify).',
-          color: '#40A0E0',
-          filePath: 'src/utils/systemPrompt.ts',
-          line: 41,
-        },
-      ],
-    },
     {
       id: CORE_ID,
       position: { x: 200, y: 150 },
-      width: 360,
-      height: 300,
+      width: 420,
+      height: 340,
       title: 'Core Architecture',
       content: 'The agentic while-loop that powers Claude Code — from user input through API streaming, tool execution, and back.',
       filePath: '/src/query.ts',
@@ -139,9 +91,9 @@ export const useBoardStore = create<BoardState>((set) => ({
     },
     {
       id: AGENT_ID,
-      position: { x: 650, y: 120 },
-      width: 360,
-      height: 540,
+      position: { x: 700, y: 120 },
+      width: 420,
+      height: 600,
       title: 'Agent System',
       content: 'Multi-agent orchestration — spawn sub-agents, coordinate work, manage autonomous sessions. Includes Advisor, Kairos, and fork-join parallelism.',
       filePath: '/src/tools/AgentTool/',
@@ -191,14 +143,14 @@ export const useBoardStore = create<BoardState>((set) => ({
         {
           label: 'Advisor (server-side)',
           description: 'Server-side reviewer model that checks the agent\'s work before substantive actions. Haiku reviews for $0.001, catches mistakes before Opus spends $0.15.',
-          color: '#E040A0',
+          color: '#2563EB',
           filePath: 'src/utils/advisor.ts',
           line: 46,
         },
         {
           label: 'Kairos (autonomous)',
           description: 'Long-lived assistant mode (--assistant) with tick-driven wake-ups, Sleep pacing, SendUserMessage communication, persistent sessions, and cron scheduling.',
-          color: '#50B0F0',
+          color: '#2563EB',
           filePath: 'src/main.tsx',
           line: 1048,
         },
@@ -213,9 +165,9 @@ export const useBoardStore = create<BoardState>((set) => ({
     },
     {
       id: MAILBOX_ID,
-      position: { x: 1100, y: 120 },
-      width: 360,
-      height: 440,
+      position: { x: 1200, y: 120 },
+      width: 420,
+      height: 500,
       title: 'Agent Mailbox',
       content: 'Dual message-passing — in-process pending queue for fast subagent comms, file-based mailbox for cross-process teams.',
       filePath: '/src/tools/SendMessageTool/SendMessageTool.ts',
@@ -256,63 +208,14 @@ export const useBoardStore = create<BoardState>((set) => ({
     //  ROW 2 — Support systems below the main flow
     // ════════════════════════════════════════════════════════════
     {
-      id: SECURITY_ID,
-      position: { x: 650, y: 620 },
-      width: 360,
-      height: 480,
-      title: 'Security & Permissions',
-      content: '23-point bash security validation + 4-layer permission gate. Blocks command injection, shell escapes, zsh module attacks, Unicode lookalikes, and /proc/environ exfiltration.',
-      filePath: '/src/tools/BashTool/bashSecurity.ts',
-      color: '#FF4040',
-      animated: true,
-      backgroundType: 'shield',
-      storySteps: [
-        { label: 'Checks', title: '23-Point Bash Security', source: 'src/tools/BashTool/bashSecurity.ts:76', description: 'Every bash command validated against 23 attack patterns: incomplete commands, jq abuse, obfuscated flags, shell metacharacters, IFS injection, command substitution, /proc/environ access, brace expansion, and more.', code: '// src/tools/BashTool/bashSecurity.ts:76\nconst BASH_SECURITY_CHECK_IDS = {\n  INCOMPLETE_COMMANDS: 1,\n  JQ_SYSTEM_FUNCTION: 2,\n  JQ_FILE_ARGUMENTS: 3,\n  OBFUSCATED_FLAGS: 4,\n  SHELL_METACHARACTERS: 5,\n  DANGEROUS_VARIABLES: 6,\n  NEWLINES: 7,\n  DANGEROUS_PATTERNS_COMMAND_SUBSTITUTION: 8,\n  DANGEROUS_PATTERNS_INPUT_REDIRECTION: 9,\n  DANGEROUS_PATTERNS_OUTPUT_REDIRECTION: 10,\n  IFS_INJECTION: 11,\n  GIT_COMMIT_SUBSTITUTION: 12,\n  PROC_ENVIRON_ACCESS: 13,\n  MALFORMED_TOKEN_INJECTION: 14,\n  BACKSLASH_ESCAPED_WHITESPACE: 15,\n  BRACE_EXPANSION: 16,\n  CONTROL_CHARACTERS: 17,\n  UNICODE_WHITESPACE: 18,\n  MID_WORD_HASH: 19,\n  ZSH_DANGEROUS_COMMANDS: 20,\n  BACKSLASH_ESCAPED_OPERATORS: 21,\n  COMMENT_QUOTE_DESYNC: 22,\n  QUOTED_NEWLINE: 23,\n} as const', codeLang: 'typescript', spark: '23 security checks. Each catches attacks the others miss. Defense in depth, not defense in abstraction.' },
-        { label: 'Zsh', title: 'Zsh Module Attack Prevention', source: 'src/tools/BashTool/bashSecurity.ts:45', description: 'Blocks 18 commands: zmodload (loads mapfile, system, zpty, net/tcp modules), emulate -c (eval equivalent), sysopen, sysread, ztcp, zsocket, zf_rm, and more.', terminal: { command: 'zmodload zsh/net/tcp', output: '✗ BLOCKED: zmodload is the gateway to raw TCP, filesystem, and pseudo-terminal attacks' }, spark: 'zmodload is the gateway to everything: raw TCP (network exfiltration), filesystem (invisible file I/O), pseudo-terminals (command execution). One command to rule them all.' },
-        { label: 'Exploit', title: '/dev/null Boundary Exploit', source: 'src/tools/BashTool/bashSecurity.ts:176', description: 'Without (?=\\s|$) boundary, "> /dev/nullo" matches "/dev/null" as PREFIX → strips it → "echo hi > /dev/nullo" becomes "echo hi o" → the write to /dev/nullo is auto-allowed.', code: '// src/tools/BashTool/bashSecurity.ts:176\nfunction stripSafeRedirections(content: string): string {\n  // SECURITY: All three patterns MUST have a trailing boundary (?=\\s|$).\n  // Without it, `> /dev/nullo` matches `/dev/null` as a PREFIX, strips\n  // `> /dev/null` leaving `o`, so `echo hi > /dev/nullo` becomes `echo hi o`.\n  // validateRedirections then sees no `>` and passes. The file write to\n  // /dev/nullo is auto-allowed via the read-only path.\n  return content\n    .replace(/\\s+2\\s*>&\\s*1(?=\\s|$)/g, \'\')\n    .replace(/[012]?\\s*>\\s*\\/dev\\/null(?=\\s|$)/g, \'\')\n    .replace(/\\s*<\\s*\\/dev\\/null(?=\\s|$)/g, \'\')\n}', codeLang: 'typescript', spark: 'Without three characters — (?=\\s|$) — an attacker can write to any path starting with /dev/null.' },
-        { label: 'Gate', title: '4-Layer Permission Gate', source: 'src/hooks/toolPermission/PermissionContext.ts:63', description: 'Layer 1: auto-approve reads. Layer 2: safe-bash prefix list (29 patterns). Layer 3: hook-based decisions. Layer 4: interactive y/N/a prompt.', code: '// src/hooks/toolPermission/PermissionContext.ts:63\ntype ResolveOnce<T> = {\n  resolve(value: T): void\n  isResolved(): boolean\n  // Atomically check-and-mark as resolved. Returns true if\n  // this caller won the race (nobody else has resolved yet).\n  // Use in async callbacks BEFORE awaiting, to close the\n  // window between isResolved() check and resolve() call.\n  claim(): boolean\n}\n\nfunction createResolveOnce<T>(resolve: (value: T) => void): ResolveOnce<T> {\n  let claimed = false\n  let delivered = false\n  return {\n    resolve(value: T) {\n      if (delivered) return\n      delivered = true; claimed = true\n      resolve(value)\n    },\n    isResolved() { return claimed },\n    claim() {\n      if (claimed) return false\n      claimed = true\n      return true\n    },\n  }\n}', codeLang: 'typescript', spark: 'Three async handlers race to resolve one permission: user dialog, bash classifier, and hooks. Atomic claim() ensures exactly one wins. Called BEFORE awaiting to close the race window.', demo: 'permission-gate' as const },
-      ],
-      subItems: [
-        {
-          label: '23 Security Checks',
-          description: 'Incomplete commands, jq abuse, obfuscated flags, shell metacharacters, IFS injection, command substitution, /proc/environ access, Unicode whitespace, brace expansion, quoted newlines, and more.',
-          color: '#FF4040',
-          filePath: 'src/tools/BashTool/bashSecurity.ts',
-          line: 76,
-        },
-        {
-          label: 'Zsh Module Attacks',
-          description: 'Blocks 18 commands: zmodload (loads mapfile, system, zpty, net/tcp, files modules), emulate -c (eval equivalent), sysopen, sysread, ztcp, zsocket, zf_rm, zf_chmod, etc.',
-          color: '#FF4040',
-          filePath: 'src/tools/BashTool/bashSecurity.ts',
-          line: 45,
-        },
-        {
-          label: '/dev/null Exploit',
-          description: 'Without boundary check (?=\\s|$), "> /dev/nullo" matches "/dev/null" as PREFIX, strips it, leaving "o" — the write to /dev/nullo is auto-allowed. Fixed with trailing boundary.',
-          color: '#FF4040',
-          filePath: 'src/tools/BashTool/bashSecurity.ts',
-          line: 176,
-        },
-        {
-          label: 'Permission Gate',
-          description: '4 layers: auto-approve reads → safe-bash prefix list (29 patterns) → hook-based decisions → interactive y/N/a prompt. ResolveOnce prevents race conditions between 3 async handlers.',
-          color: '#FF4040',
-          filePath: 'src/hooks/toolPermission/PermissionContext.ts',
-          line: 63,
-        },
-      ],
-    },
-    {
       id: CACHE_ID,
-      position: { x: 200, y: 520 },
-      width: 360,
-      height: 480,
+      position: { x: 200, y: 560 },
+      width: 420,
+      height: 540,
       title: 'Prompt Caching',
       content: 'Ephemeral KV-cache breakpoints on the Anthropic API — cache system prompts, tool schemas, and conversation prefixes to avoid re-processing thousands of tokens every turn.',
       filePath: '/src/services/api/claude.ts',
       color: '#059669',
-      diagramId: 'cache-economics',
       animated: true,
       backgroundType: 'cache',
       storySteps: [
@@ -376,9 +279,9 @@ export const useBoardStore = create<BoardState>((set) => ({
     },
     {
       id: HOOKS_ID,
-      position: { x: 1100, y: 660 },
-      width: 360,
-      height: 480,
+      position: { x: 1200, y: 700 },
+      width: 420,
+      height: 340,
       title: 'Hooks',
       content: '27 lifecycle events — shell commands, LLM prompts, or HTTP webhooks that can block, modify, or observe every tool call.',
       filePath: '/src/utils/hooks.ts',
@@ -392,32 +295,11 @@ export const useBoardStore = create<BoardState>((set) => ({
       ],
       subItems: [
         {
-          label: 'Hook Engine',
-          description: 'Main async generator (5,022 lines): matches hooks by event + matcher, parallel-executes all matched hooks, aggregates results. Exit code 2 blocks operations.',
-          color: '#EA580C',
-          filePath: 'src/utils/hooks.ts',
-          line: 1952,
-        },
-        {
-          label: 'PreToolUse',
-          description: 'Runs before every tool: can deny (block execution), modify input (updatedInput), or approve. Fast-path for trusted tools. Returns permission decisions.',
-          color: '#EA580C',
-          filePath: 'src/utils/hooks.ts',
-          line: 3394,
-        },
-        {
           label: 'Stop Hook',
           description: 'Fires when model thinks it\'s done. If hook returns exit code 2, model gets feedback and CONTINUES — can\'t stop until hook passes (e.g., "npm test" must pass).',
           color: '#EA580C',
           filePath: 'src/utils/hooks.ts',
           line: 3639,
-        },
-        {
-          label: '5 Hook Types',
-          description: 'Shell command spawn, LLM prompt verification, HTTP POST webhook, agent-based structured reasoning, TypeScript callback. All receive JSON context, return JSON responses.',
-          color: '#EA580C',
-          filePath: 'src/types/hooks.ts',
-          line: 210,
         },
       ],
     },
@@ -427,9 +309,9 @@ export const useBoardStore = create<BoardState>((set) => ({
     // ════════════════════════════════════════════════════════════
     {
       id: COMPACT_ID,
-      position: { x: 650, y: 1160 },
-      width: 360,
-      height: 480,
+      position: { x: 700, y: 1300 },
+      width: 420,
+      height: 540,
       title: 'Compaction',
       content: 'Context management — summarizes old messages when tokens run high. 5-layer pipeline from cheap to expensive.',
       filePath: '/src/services/compact/compact.ts',

@@ -12,9 +12,10 @@ import { PermissionGateDemo } from './PermissionGateDemo';
 import { CompactionDemo } from './CompactionDemo';
 import { MailboxRouteDemo } from './MailboxRouteDemo';
 import { MemoryLayersDemo } from './MemoryLayersDemo';
+import { CodeBlock } from './CodeBlock';
 import './StoryOverlay.css';
 
-const SOURCE_ROOT = import.meta.env.VITE_SOURCE_ROOT || '/Users/illiafilipas/code/collection-claude-code-source-code/claude-code-source-code';
+const SOURCE_ROOT = import.meta.env.VITE_SOURCE_ROOT || '/Users/edvardsivickij/Documents/claude code';
 
 function SourceLink({ source, className }: { source: string; className?: string }) {
   const match = source.match(/^(.+?):(\d+)$/);
@@ -80,7 +81,6 @@ export function StoryOverlay() {
         <div className="story-overlay__header">
           <button className="story-overlay__back" onClick={undive}>← Back</button>
           <h1 className="story-overlay__title">{tile.title}</h1>
-          {tile.filePath && <SourceLink source={tile.filePath} className="story-overlay__source" />}
         </div>
 
         {tile.content && <p className="story-overlay__desc">{tile.content}</p>}
@@ -136,8 +136,8 @@ function StepCard({ step, index }: { step: StoryStep; index: number }) {
       {/* Code block */}
       {step.code && (
         <div className="story-code">
-          <div className="story-code__header">{step.codeLang || 'code'} {step.source && <> · <SourceLink source={step.source} /></>}</div>
-          <div className="story-code__body">{step.code}</div>
+          <div className="story-code__header">{step.codeLang || 'code'}</div>
+          <CodeBlock code={step.code} lang={step.codeLang} />
         </div>
       )}
 

@@ -86,7 +86,7 @@ export function HooksBackground({ width, height, color }: Props) {
       ctx!.stroke();
 
       // Traveling signal down pipeline
-      const signalY = ((time * 0.015) % (height + 40)) - 20;
+      const signalY = ((time * 0.009) % (height + 40)) - 20;
       const sigGrad = ctx!.createLinearGradient(pipelineX, signalY - 20, pipelineX, signalY + 20);
       sigGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
       sigGrad.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, 0.25)`);
@@ -100,7 +100,7 @@ export function HooksBackground({ width, height, color }: Props) {
 
       // Trigger events periodically
       triggerTimer++;
-      if (triggerTimer > 80) {
+      if (triggerTimer > 130) {
         triggerTimer = 0;
         const candidates = events.filter(e => !e.active);
         if (candidates.length > 0) {
@@ -110,7 +110,7 @@ export function HooksBackground({ width, height, color }: Props) {
 
       // Draw events
       for (const ev of events) {
-        const basePulse = Math.sin(time * 0.0015 + ev.phase) * 0.2 + 0.8;
+        const basePulse = Math.sin(time * 0.001 + ev.phase) * 0.2 + 0.8;
         const isActive = ev.active;
 
         // Event dot
@@ -156,7 +156,7 @@ export function HooksBackground({ width, height, color }: Props) {
         if (isActive) {
           let allDone = true;
           for (const fork of ev.forks) {
-            fork.progress += 0.012;
+            fork.progress += 0.007;
             if (fork.progress < 1) allDone = false;
 
             const forkAlpha = fork.progress < 0.8 ? 0.35 : 0.35 * (1 - (fork.progress - 0.8) * 5);

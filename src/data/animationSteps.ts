@@ -2,7 +2,7 @@ import type { AnimationStep } from '../types/board';
 
 /**
  * Presentation steps following the exact execution flow of the agentic loop.
- * Matches main branch order: Core → Compact → Cache → Core → Hooks → Security →
+ * Matches main branch order: Core → Compact → Cache → Core → Hooks →
  * Core → Agent → Mailbox → Core
  */
 export const ANIMATION_STEPS: AnimationStep[] = [
@@ -50,18 +50,10 @@ export const ANIMATION_STEPS: AnimationStep[] = [
     codeRef: 'hooks.ts:3394',
     description: 'Lifecycle hooks run before each tool — can block, modify input, or approve.',
   },
-  {
-    tileId: 'tile-security',
-    connection: { from: 'tile-hooks', to: 'tile-security', label: 'hasToolPermission' },
-    label: 'Permission + security gate',
-    codeRef: 'bashSecurity.ts:76',
-    description: '23-point bash validation + 4-layer permission gate: reads → safe-bash → hooks → interactive ask.',
-  },
-
   // ── Tool executes ─────────────────────────────────────────────
   {
     tileId: 'tile-core-architecture',
-    connection: { from: 'tile-security', to: 'tile-core-architecture', label: 'approved' },
+    connection: { from: 'tile-hooks', to: 'tile-core-architecture', label: 'approved' },
     label: 'Tool executes',
     codeRef: 'toolExecution.ts:1012',
     description: 'tool.call() runs — Bash, FileEdit, Agent, or any of 40+ tools. Results feed back into messages.',

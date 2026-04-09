@@ -293,7 +293,7 @@ export function StoryPage() {
                     const m = f.source.match(/^(.+?):(\d+)$/);
                     const fp = m ? m[1] : f.source;
                     const ln = m ? m[2] : undefined;
-                    const root = import.meta.env.VITE_SOURCE_ROOT || '';
+                    const root = import.meta.env.VITE_SOURCE_ROOT || '/Users/edvardsivickij/Documents/claude code';
                     return `cursor://file${root}/${fp}${ln ? `:${ln}:1` : ''}`;
                   })()} onClick={(e) => e.stopPropagation()} title="Open in Cursor" style={{ textDecoration: 'none', color: 'inherit' }}>{f.source}</a>
                 </div>

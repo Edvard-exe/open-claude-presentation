@@ -21,7 +21,7 @@ export function SubItemOverlay() {
 
   const handleOpenInCursor = () => {
     if (item.filePath) {
-      const root = import.meta.env.VITE_SOURCE_ROOT || '';
+      const root = import.meta.env.VITE_SOURCE_ROOT || '/Users/edvardsivickij/Documents/claude code';
       const url = `cursor://file${root}/${item.filePath}${item.line ? `:${item.line}:1` : ''}`;
       window.location.href = url;
     }

@@ -60,7 +60,7 @@
 }
 
 .story-overlay__desc {
-  color: #999;
+  color: #ccc;
   font-size: 0.95rem;
   line-height: 1.6;
   margin-bottom: 2rem;
@@ -212,7 +212,7 @@
 
 .story-card__src {
   font-size: 0.7rem;
-  color: #555;
+  color: #8ab4f8;
   background: #161622;
   padding: 0.2rem 0.5rem;
   border-radius: 5px;
@@ -220,7 +220,7 @@
 }
 
 .story-card__desc {
-  color: #999;
+  color: #ccc;
   font-size: 0.9rem;
   line-height: 1.6;
   margin: 0.75rem 0;
@@ -240,7 +240,7 @@
 }
 
 .story-spark::before {
-  content: '💡 ';
+  content: '';
 }
 
 /* Code block */
@@ -274,6 +274,31 @@
   white-space: pre;
   tab-size: 2;
 }
+
+/* Syntax highlighting — VS Code dark+ inspired */
+.story-code__body .hljs-keyword { color: #c586c0; }
+.story-code__body .hljs-built_in { color: #4ec9b0; }
+.story-code__body .hljs-type { color: #4ec9b0; }
+.story-code__body .hljs-literal { color: #569cd6; }
+.story-code__body .hljs-number { color: #b5cea8; }
+.story-code__body .hljs-string { color: #ce9178; }
+.story-code__body .hljs-template-variable { color: #ce9178; }
+.story-code__body .hljs-subst { color: #d4d4d4; }
+.story-code__body .hljs-comment { color: #6a9955; font-style: italic; }
+.story-code__body .hljs-function { color: #dcdcaa; }
+.story-code__body .hljs-title { color: #dcdcaa; }
+.story-code__body .hljs-title.function_ { color: #dcdcaa; }
+.story-code__body .hljs-title.class_ { color: #4ec9b0; }
+.story-code__body .hljs-params { color: #9cdcfe; }
+.story-code__body .hljs-variable { color: #9cdcfe; }
+.story-code__body .hljs-property { color: #9cdcfe; }
+.story-code__body .hljs-attr { color: #9cdcfe; }
+.story-code__body .hljs-regexp { color: #d16969; }
+.story-code__body .hljs-operator { color: #d4d4d4; }
+.story-code__body .hljs-punctuation { color: #d4d4d4; }
+.story-code__body .hljs-meta { color: #569cd6; }
+.story-code__body .hljs-selector-tag { color: #d7ba7d; }
+.story-code__body .hljs-attribute { color: #9cdcfe; }
 
 /* Terminal */
 .story-term {

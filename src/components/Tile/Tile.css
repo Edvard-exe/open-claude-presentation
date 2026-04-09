@@ -126,11 +126,11 @@
 }
 
 .tile__header {
-  padding: 16px 20px 12px;
+  padding: 20px 24px 14px;
   border-bottom: 2px solid var(--tile-accent);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .tile__diagram-btn {
@@ -138,8 +138,8 @@
   background: none;
   border: 1px solid color-mix(in srgb, var(--tile-accent) 30%, transparent);
   color: var(--tile-accent);
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -158,8 +158,8 @@
 }
 
 .tile__pulse {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--tile-accent);
   position: relative;
@@ -198,33 +198,32 @@
 }
 
 .tile__title {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
   color: #1a1a1a;
   letter-spacing: -0.02em;
+  text-rendering: optimizeLegibility;
 }
 
 .tile__content {
-  padding: 12px 20px 16px;
-  font-size: 13px;
+  padding: 14px 24px 18px;
+  font-size: 15px;
   line-height: 1.6;
   color: #555;
-  flex: 1;
-  overflow: hidden;
 }
 
 .tile__sub-items {
-  padding: 4px 16px 8px;
+  padding: 6px 20px 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .tile__sub-item {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: 12px;
+  padding: 10px 12px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid color-mix(in srgb, var(--sub-color) 15%, transparent);
@@ -259,23 +258,23 @@
 }
 
 .tile__sub-label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #1a1a1a;
   line-height: 1.3;
 }
 
 .tile__sub-desc {
-  font-size: 10px;
+  font-size: 12px;
   color: #888;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 .tile__sub-file {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 9px;
+  font-size: 11px;
   font-family: 'SF Mono', 'Menlo', 'Fira Code', monospace;
   color: var(--sub-color);
   margin-top: 2px;
@@ -288,13 +287,18 @@
 }
 
 .tile__links {
+  margin-top: auto;
   background: color-mix(in srgb, var(--tile-accent) 5%, white);
   border-top: 1px solid color-mix(in srgb, var(--tile-accent) 10%, transparent);
 }
 
+[data-tile-id="tile-core-architecture"] .tile__content {
+  padding-bottom: 60px;
+}
+
 .tile__path {
-  padding: 6px 20px;
-  font-size: 11px;
+  padding: 8px 24px;
+  font-size: 13px;
   font-family: 'SF Mono', 'Menlo', 'Fira Code', monospace;
   color: var(--tile-accent);
   white-space: nowrap;
@@ -306,8 +310,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 20px;
-  font-size: 11px;
+  padding: 8px 24px;
+  font-size: 13px;
   font-family: 'SF Mono', 'Menlo', 'Fira Code', monospace;
   color: var(--tile-accent);
   text-decoration: none;
@@ -324,8 +328,8 @@
 }
 
 .tile__cta {
-  padding: 10px 20px;
-  font-size: 12px;
+  padding: 12px 24px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--tile-accent);
   display: flex;

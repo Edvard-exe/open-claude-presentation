@@ -68,9 +68,10 @@ export function Tile({ tile }: TileProps) {
         left: tile.position.x,
         top: tile.position.y,
         width: tile.width,
-        height: tile.height,
+        minHeight: tile.height,
         '--tile-accent': accentColor,
       } as React.CSSProperties}
+      data-tile-id={tile.id}
       onPointerDown={handlePointerDown}
       onPointerMove={dragHandlers.onPointerMove}
       onPointerUp={handlePointerUp}

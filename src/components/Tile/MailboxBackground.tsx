@@ -56,7 +56,7 @@ export function MailboxBackground({ width, height, color }: Props) {
         y: from.y,
         targetX: to.x,
         targetY: to.y,
-        speed: 0.004 + Math.random() * 0.003,
+        speed: 0.0025 + Math.random() * 0.002,
         progress: 0,
         channel,
         queued: false,
@@ -121,14 +121,14 @@ export function MailboxBackground({ width, height, color }: Props) {
 
       // Spawn messages
       spawnRef.current++;
-      if (spawnRef.current > 18 && messages.length < 12) {
+      if (spawnRef.current > 30 && messages.length < 12) {
         spawnRef.current = 0;
         spawnMessage();
       }
 
       // Periodic drain burst
       drainRef.current++;
-      if (drainRef.current > 120) {
+      if (drainRef.current > 200) {
         drainRef.current = 0;
         for (const m of messages) {
           if (m.queued) m.draining = true;
@@ -140,7 +140,7 @@ export function MailboxBackground({ width, height, color }: Props) {
         const m = messages[i];
 
         if (m.draining) {
-          m.progress += m.speed * 2;
+          m.progress += m.speed * 1.5;
         } else if (!m.queued) {
           m.progress += m.speed;
         }
